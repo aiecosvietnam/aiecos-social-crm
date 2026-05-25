@@ -8,6 +8,13 @@ Open-source template to sync Pancake (Zalo OA / Facebook Messenger / Instagram) 
 
 **🌐 [Live demo](https://aiecosvietnam.github.io/aiecos-social-crm/)** · **📖 [Setup guide](SETUP.md)** · **🤖 [MCP usage](docs/MCP_USAGE.md)**
 
+## 🎬 Demo
+
+https://github.com/aiecosvietnam/aiecos-social-crm/releases/download/v1.0.0/demo.mp4
+
+<sub>11-second walkthrough — Dashboard · Inbox · Pipeline · Partner 360 · Performance. <br>
+Inline player auto-renders on GitHub.com. Fallback: **[direct download](https://github.com/aiecosvietnam/aiecos-social-crm/releases/download/v1.0.0/demo.mp4)**.</sub>
+
 ---
 
 **What it does:**
