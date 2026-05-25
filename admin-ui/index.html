@@ -5,6 +5,7 @@
 <title>AIECOS Social CRM</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="demo-data.js"></script>
 <style>
   :root {
     --bg:#fafafa; --bg-card:#fff; --bg-subtle:#f3f4f6;
@@ -18,11 +19,12 @@
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
   .layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
   .sidebar { background:#fff; border-right:1px solid var(--border); padding:18px 14px; }
-  .ws { display:flex; align-items:center; gap:10px; padding:10px; background:var(--bg-subtle); border-radius:10px; margin-bottom:18px; }
+  .ws { display:flex; align-items:center; gap:10px; padding:10px; background:var(--bg-subtle); border-radius:10px; margin-bottom:12px; }
   .ws .avatar { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#3b82f6,#a78bfa); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; }
   .ws .info { flex:1; }
   .ws .name { font-weight:600; font-size:13px; }
   .ws .sub { font-size:11px; color:var(--text-muted); }
+  .demo-badge { display:inline-block; padding:2px 6px; background:#fef3c7; color:#92400e; border-radius:4px; font-size:10px; font-weight:600; margin-bottom:12px; width:100%; text-align:center; }
   .nav-group { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; margin:14px 6px 6px; }
   .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--text-light); margin-bottom:2px; }
   .nav-item:hover { background:var(--bg-subtle); color:var(--text); }
@@ -32,10 +34,13 @@
   .page-header h1 { margin:0 0 4px; font-size:22px; }
   .page-header p { margin:0; color:var(--text-muted); font-size:13px; }
   .header-actions { display:flex; gap:8px; align-items:center; }
-  .btn { padding:7px 14px; border:1px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:13px; }
+  .btn { padding:7px 14px; border:1px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:13px; font-family:inherit; }
+  .btn:hover { background:var(--bg-subtle); }
   .btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .btn-primary:hover { background:#1e293b; }
+  .btn-sm { padding:4px 10px; font-size:12px; }
   .filter-segs { display:flex; gap:4px; background:var(--bg-subtle); padding:3px; border-radius:8px; }
-  .filter-segs button { padding:5px 12px; border:none; background:transparent; border-radius:6px; font-size:12px; cursor:pointer; color:var(--text-light); }
+  .filter-segs button { padding:5px 12px; border:none; background:transparent; border-radius:6px; font-size:12px; cursor:pointer; color:var(--text-light); font-family:inherit; }
   .filter-segs button.active { background:#fff; color:var(--text); font-weight:600; box-shadow:var(--shadow); }
   .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:14px; margin-bottom:24px; }
   .stat-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:var(--shadow); }
@@ -67,12 +72,46 @@
   .progress { width:100px; height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; }
   .progress > span { display:block; height:100%; }
   .config-warning { background:#fef3c7; border:1px solid #fbbf24; color:#92400e; padding:14px 18px; border-radius:10px; margin-bottom:20px; font-size:13px; }
+  .config-info { background:#dbeafe; border:1px solid #60a5fa; color:#1e40af; padding:14px 18px; border-radius:10px; margin-bottom:20px; font-size:13px; }
+  /* Inbox 2-pane */
+  .inbox-layout { display:grid; grid-template-columns:320px 1fr; gap:14px; height:calc(100vh - 160px); }
+  .inbox-list { background:#fff; border:1px solid var(--border); border-radius:12px; overflow-y:auto; box-shadow:var(--shadow); }
+  .inbox-item { padding:12px 14px; border-bottom:1px solid var(--border); cursor:pointer; }
+  .inbox-item:hover { background:var(--bg-subtle); }
+  .inbox-item.active { background:#eff6ff; border-left:3px solid var(--accent); padding-left:11px; }
+  .inbox-item .name { font-weight:600; font-size:13px; margin-bottom:2px; }
+  .inbox-item .snippet { font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .inbox-item .meta { font-size:10px; color:var(--text-muted); margin-top:4px; display:flex; justify-content:space-between; }
+  .inbox-detail { background:#fff; border:1px solid var(--border); border-radius:12px; display:flex; flex-direction:column; box-shadow:var(--shadow); }
+  .inbox-detail-header { padding:14px 18px; border-bottom:1px solid var(--border); }
+  .inbox-detail-body { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column-reverse; gap:10px; }
+  .msg-bubble { max-width:65%; padding:8px 12px; border-radius:12px; font-size:13px; }
+  .msg-bubble.customer { background:var(--bg-subtle); align-self:flex-start; }
+  .msg-bubble.agent { background:#0f172a; color:#fff; align-self:flex-end; }
+  .msg-bubble .meta { font-size:10px; opacity:.6; margin-top:4px; }
+  /* Heatmap */
+  .heatmap { display:grid; grid-template-columns:60px repeat(24, 1fr); gap:2px; font-size:10px; }
+  .heatmap-cell { aspect-ratio:1; border-radius:3px; background:var(--bg-subtle); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; }
+  .heatmap-label { display:flex; align-items:center; padding-right:6px; color:var(--text-muted); justify-content:flex-end; }
+  /* Code blocks */
+  pre { background:var(--bg-subtle); padding:14px; border-radius:8px; overflow-x:auto; font-size:12px; line-height:1.5; font-family:'SF Mono',Monaco,Consolas,monospace; margin:8px 0; }
+  code { background:var(--bg-subtle); padding:1px 5px; border-radius:3px; font-family:'SF Mono',Monaco,Consolas,monospace; font-size:12px; }
+  .copy-btn { float:right; padding:3px 8px; font-size:11px; cursor:pointer; border:1px solid var(--border); background:#fff; border-radius:4px; }
+  /* Tabs */
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:18px; }
+  .tab { padding:10px 16px; cursor:pointer; border-bottom:2px solid transparent; color:var(--text-muted); font-size:13px; }
+  .tab.active { color:var(--text); border-bottom-color:var(--accent); font-weight:600; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  @media print {
+    .sidebar, .header-actions { display:none !important; }
+    .main { padding:0; }
+  }
 </style>
 </head>
 <body>
 
 <div class="layout">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="ws">
       <div class="avatar">AI</div>
@@ -82,146 +121,242 @@
       </div>
     </div>
 
+    <div id="demoBadge" class="demo-badge" style="display:none;">🎭 DEMO MODE — Sample data</div>
+
     <div class="nav-group">Workspace</div>
     <div class="nav-item active" data-sec="dashboard">📊 Dashboard</div>
     <div class="nav-item" data-sec="triage">⚡ Cần chăm sóc</div>
-    <div class="nav-item" data-sec="pipeline">🎯 Pipeline / Partners</div>
+    <div class="nav-item" data-sec="inbox">💬 Inbox</div>
+    <div class="nav-item" data-sec="pipeline">🎯 Pipeline</div>
 
     <div class="nav-group">Customers</div>
     <div class="nav-item" data-sec="partner360">👥 Partner 360</div>
 
     <div class="nav-group">Analytics</div>
     <div class="nav-item" data-sec="performance">📈 Performance</div>
+    <div class="nav-item" data-sec="reports">📄 Reports</div>
 
     <div class="nav-group">System</div>
+    <div class="nav-item" data-sec="help">📖 Help & MCP</div>
     <div class="nav-item" data-sec="settings">⚙ Settings</div>
   </aside>
 
-  <!-- Main content -->
   <main class="main">
 
     <!-- ═══ DASHBOARD ═══ -->
     <section class="section active" id="sec-dashboard">
       <div class="page-header">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Tổng quan vận hành AIECOS Social CRM</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn" onclick="loadAll()">↻ Refresh</button>
-        </div>
+        <div><h1>Dashboard</h1><p>Tổng quan vận hành AIECOS Social CRM</p></div>
+        <div class="header-actions"><button class="btn" onclick="loadAll()">↻ Refresh</button></div>
       </div>
-
       <div id="configWarning"></div>
-
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div>
-          <div class="value" id="kpiTotal">—</div>
-          <div class="sub">Unique customers</div>
-        </div>
-        <div class="stat-card">
-          <div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div>
-          <div class="value" id="kpiActive" style="color:var(--green);">—</div>
-          <div class="sub">Tương tác ≤ 7 ngày</div>
-        </div>
-        <div class="stat-card">
-          <div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div>
-          <div class="value" id="kpiAtRisk" style="color:var(--orange);">—</div>
-          <div class="sub">7–30 ngày im</div>
-        </div>
-        <div class="stat-card">
-          <div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div>
-          <div class="value" id="kpiDormant" style="color:var(--pink);">—</div>
-          <div class="sub">> 30 ngày im</div>
-        </div>
-        <div class="stat-card">
-          <div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div>
-          <div class="value" id="kpiMsgs">—</div>
-          <div class="sub">Toàn bộ</div>
-        </div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—</div><div class="sub">Unique customers</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—</div><div class="sub">≤ 7 ngày tương tác</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—</div><div class="sub">7–30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—</div><div class="sub">> 30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—</div><div class="sub">Toàn bộ period</div></div>
       </div>
-
-      <div class="card">
-        <div class="card-header"><h3>Activity trend — last 14 days</h3></div>
-        <div class="card-body"><canvas id="trendChart" height="80"></canvas></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><h3>Recent messages</h3></div>
-        <div class="card-body" id="recentList">Loading...</div>
-      </div>
+      <div class="card"><div class="card-header"><h3>Activity trend — last 14 days</h3></div><div class="card-body"><canvas id="trendChart" height="80"></canvas></div></div>
+      <div class="card"><div class="card-header"><h3>Recent messages</h3></div><div class="card-body" id="recentList">Loading...</div></div>
     </section>
 
     <!-- ═══ TRIAGE ═══ -->
     <section class="section" id="sec-triage">
-      <div class="page-header">
-        <div>
-          <h1>Đối tác cần chăm sóc</h1>
-          <p>Auto-alert partners chuyển At-Risk hoặc Dormant</p>
+      <div class="page-header"><div><h1>Đối tác cần chăm sóc</h1><p>Auto-alert partners chuyển At-Risk hoặc Dormant</p></div></div>
+      <div class="card"><div class="card-header"><h3>🚨 KHẨN — At-Risk (cần outreach 1-3 ngày)</h3></div><div class="card-body" id="triageUrgent">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3>🌙 CẦN REVIVAL — Dormant + Churned</h3></div><div class="card-body" id="triagePending">Loading...</div></div>
+    </section>
+
+    <!-- ═══ INBOX (NEW) ═══ -->
+    <section class="section" id="sec-inbox">
+      <div class="page-header"><div><h1>Inbox</h1><p>Xem hội thoại + tin nhắn của từng partner</p></div></div>
+      <div class="inbox-layout">
+        <div class="inbox-list" id="inboxList">Loading...</div>
+        <div class="inbox-detail">
+          <div class="inbox-detail-header" id="inboxDetailHeader">
+            <div style="color:var(--text-muted); font-size:13px;">Chọn 1 hội thoại bên trái để xem tin nhắn</div>
+          </div>
+          <div class="inbox-detail-body" id="inboxDetailBody"></div>
         </div>
       </div>
-      <div class="card"><div class="card-header"><h3>KHẨN — At-Risk (cần outreach 1-3 ngày)</h3></div>
-        <div class="card-body" id="triageUrgent">Loading...</div></div>
-      <div class="card"><div class="card-header"><h3>CẦN REVIVAL — Dormant + Churned</h3></div>
-        <div class="card-body" id="triagePending">Loading...</div></div>
     </section>
 
     <!-- ═══ PIPELINE ═══ -->
     <section class="section" id="sec-pipeline">
-      <div class="page-header">
-        <div>
-          <h1>Pipeline</h1>
-          <p>Tình trạng đối tác — phân nhóm theo mức độ hoạt động</p>
-        </div>
-      </div>
+      <div class="page-header"><div><h1>Pipeline</h1><p>Tình trạng đối tác — phân nhóm theo mức độ hoạt động</p></div></div>
       <div class="kanban" id="kanban"></div>
     </section>
 
     <!-- ═══ PARTNER 360 ═══ -->
     <section class="section" id="sec-partner360">
-      <div class="page-header">
-        <div>
-          <h1>Partner 360</h1>
-          <p>Quản lý đối tác B2B — chi tiết last contact + activity</p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body" style="padding:0;">
-          <table><thead><tr><th>Partner</th><th>Page</th><th>Stage</th><th>Days silent</th><th>Last seen</th></tr></thead>
-          <tbody id="partnerTable"><tr><td colspan="5">Loading...</td></tr></tbody></table>
-        </div>
-      </div>
+      <div class="page-header"><div><h1>Partner 360</h1><p>Quản lý đối tác B2B — chi tiết last contact + activity</p></div></div>
+      <div class="card"><div class="card-body" style="padding:0;">
+        <table><thead><tr><th>Partner</th><th>Page</th><th>Stage</th><th>Days silent</th><th>Last seen</th></tr></thead>
+        <tbody id="partnerTable"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+      </div></div>
     </section>
 
     <!-- ═══ PERFORMANCE ═══ -->
     <section class="section" id="sec-performance">
-      <div class="page-header">
-        <div>
-          <h1>Performance</h1>
-          <p>Phân tích vận hành — tin nhắn, hoạt động partner</p>
-        </div>
-      </div>
+      <div class="page-header"><div><h1>Performance</h1><p>Phân tích vận hành — tin nhắn, hoạt động partner</p></div></div>
       <div class="stats-grid">
         <div class="stat-card"><div class="label-row">Total messages</div><div class="value" id="perfMsgs">—</div></div>
         <div class="stat-card"><div class="label-row">Customer msgs</div><div class="value" id="perfCust">—</div></div>
         <div class="stat-card"><div class="label-row">Agent msgs</div><div class="value" id="perfAgent">—</div></div>
         <div class="stat-card"><div class="label-row">Reply rate</div><div class="value" id="perfRate">—</div></div>
       </div>
-      <div class="card"><div class="card-header"><h3>Customer vs Agent — last 14 days</h3></div>
-        <div class="card-body"><canvas id="perfTrend" height="80"></canvas></div></div>
-      <div class="card"><div class="card-header"><h3>Top partners by volume</h3></div>
-        <div class="card-body" id="topPartners">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3>Customer vs Agent — last 14 days</h3></div><div class="card-body"><canvas id="perfTrend" height="80"></canvas></div></div>
+      <div class="card"><div class="card-header"><h3>Hourly activity heatmap (last 30 days)</h3></div><div class="card-body" id="perfHeatmap">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3>Top partners by message volume</h3></div><div class="card-body" id="topPartners">Loading...</div></div>
+    </section>
+
+    <!-- ═══ REPORTS (NEW) ═══ -->
+    <section class="section" id="sec-reports">
+      <div class="page-header">
+        <div><h1>Reports</h1><p>Xuất báo cáo + CSV từ data tin nhắn</p></div>
+        <div class="header-actions">
+          <div class="filter-segs">
+            <button onclick="setReportRange(7,this)">7d</button>
+            <button class="active" onclick="setReportRange(30,this)">30d</button>
+            <button onclick="setReportRange(90,this)">90d</button>
+          </div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="label-row">Period</div><div class="value" id="rptPeriod" style="font-size:18px;">last 30d</div></div>
+        <div class="stat-card"><div class="label-row">Messages in period</div><div class="value" id="rptMsgs">—</div></div>
+        <div class="stat-card"><div class="label-row">Active partners</div><div class="value" id="rptActive">—</div></div>
+        <div class="stat-card"><div class="label-row">Need attention</div><div class="value" id="rptNeed" style="color:var(--orange);">—</div></div>
+      </div>
+      <div class="card"><div class="card-header"><h3>Export options</h3></div><div class="card-body">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <button class="btn btn-primary" onclick="exportCSV('partners')">⬇ Export Partners (CSV)</button>
+          <button class="btn btn-primary" onclick="exportCSV('messages')">⬇ Export Messages (CSV)</button>
+          <button class="btn" onclick="exportHTMLReport()">📄 Generate HTML Report (printable)</button>
+          <button class="btn" onclick="exportJSON()">{ } Export raw JSON</button>
+        </div>
+      </div></div>
+      <div class="card"><div class="card-header"><h3>Report preview</h3></div><div class="card-body" id="reportPreview">Loading...</div></div>
+    </section>
+
+    <!-- ═══ HELP & MCP (NEW) ═══ -->
+    <section class="section" id="sec-help">
+      <div class="page-header"><div><h1>Help & MCP setup</h1><p>Quick start + hướng dẫn kết nối MCP cho Claude</p></div></div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('tab-quickstart', this)">🚀 Quick start</div>
+        <div class="tab" onclick="switchTab('tab-mcp', this)">🤖 MCP setup</div>
+        <div class="tab" onclick="switchTab('tab-extension', this)">🧩 Chrome extension</div>
+        <div class="tab" onclick="switchTab('tab-api', this)">🔌 API reference</div>
+      </div>
+
+      <div class="tab-content active" id="tab-quickstart">
+        <div class="card"><div class="card-body">
+          <h3 style="margin-top:0;">5-minute setup</h3>
+          <ol style="line-height:1.8;">
+            <li><b>Clone repo</b>: <code>git clone https://github.com/aiecosvietnam/aiecos-social-crm</code></li>
+            <li><b>Boot Docker stack</b>: <code>cp .env.example .env && docker compose up -d</code></li>
+            <li><b>Seed demo data</b>: <code>bash examples/seed-demo-data.sh</code></li>
+            <li><b>Open this UI</b> → Settings → enter Supabase URL <code>http://localhost:3000</code></li>
+            <li><b>Install Chrome extension</b> → chrome://extensions/ → Load unpacked → chọn <code>chrome-extension/</code> folder</li>
+            <li><b>Configure extension</b>: enter server URL + API token từ <code>.env</code></li>
+          </ol>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <h3 style="margin-top:0;">5-stage partner classification</h3>
+          <table style="width:100%;">
+            <tr><td><span style="color:var(--green); font-weight:600;">● Active</span></td><td>≤ 3 ngày tương tác</td><td>Healthy</td></tr>
+            <tr><td><span style="color:var(--yellow); font-weight:600;">● Sleeping</span></td><td>3-7 ngày im</td><td>Đáng theo dõi</td></tr>
+            <tr><td><span style="color:var(--orange); font-weight:600;">● At-Risk</span></td><td>7-30 ngày im</td><td>Cần outreach</td></tr>
+            <tr><td><span style="color:var(--pink); font-weight:600;">● Dormant</span></td><td>30-90 ngày im</td><td>Revival campaign</td></tr>
+            <tr><td><span style="color:var(--red); font-weight:600;">● Churned</span></td><td>> 90 ngày im</td><td>Có thể lost</td></tr>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="tab-content" id="tab-mcp">
+        <div class="card"><div class="card-body">
+          <h3 style="margin-top:0;">1. Install MCP server</h3>
+          <pre><button class="copy-btn" onclick="copyText(this)">copy</button><code>cd mcp-server && npm install</code></pre>
+
+          <h3>2. Add to <code>~/.claude.json</code></h3>
+          <p style="font-size:12px; color:var(--text-muted);">Edit Claude config — append vào <code>mcpServers</code> object:</p>
+          <pre><button class="copy-btn" onclick="copyText(this)">copy</button><code id="mcpConfigSnippet">{
+  "mcpServers": {
+    "aiecos-social-crm": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/absolute/path/to/aiecos-social-crm/mcp-server/index.js"],
+      "env": {
+        "AIECOS_SUPABASE_URL": "https://your-project.supabase.co",
+        "AIECOS_SUPABASE_KEY": "eyJhbGc...your-service-role-key",
+        "AIECOS_SCHEMA": "aiecos_social"
+      }
+    }
+  }
+}</code></pre>
+          <h3>3. Restart Claude Code → 8 tools available</h3>
+          <ul style="font-size:13px; line-height:1.8;">
+            <li><code>summary</code> — tổng quan</li>
+            <li><code>list_partners(stage?)</code> — list theo stage</li>
+            <li><code>get_partner_messages(conv_id)</code> — lịch sử 1 partner</li>
+            <li><code>search_messages(query)</code> — tìm tin nhắn</li>
+            <li><code>get_at_risk_partners(min_days?, max_days?)</code></li>
+            <li><code>pipeline_stats</code> — phân bố 5 stages</li>
+            <li><code>top_partners_by_volume(limit?, days?)</code></li>
+            <li><code>recent_activity(limit?)</code></li>
+          </ul>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <h3 style="margin-top:0;">Example prompts</h3>
+          <pre><button class="copy-btn" onclick="copyText(this)">copy</button><code>Use MCP aiecos-social-crm: show me summary + top 5 partners by msg volume this week</code></pre>
+          <pre><button class="copy-btn" onclick="copyText(this)">copy</button><code>aiecos-social-crm: list dormant partners and suggest re-engagement messages for each</code></pre>
+          <pre><button class="copy-btn" onclick="copyText(this)">copy</button><code>aiecos-social-crm: search messages with "pricing" or "discount" in the last 30 days</code></pre>
+        </div></div>
+      </div>
+
+      <div class="tab-content" id="tab-extension">
+        <div class="card"><div class="card-body">
+          <h3 style="margin-top:0;">Install AIECOS Pancake Connector</h3>
+          <ol style="line-height:1.8;">
+            <li>Mở <code>chrome://extensions/</code></li>
+            <li>Bật <b>Developer mode</b> (góc phải trên)</li>
+            <li>Click <b>Load unpacked</b></li>
+            <li>Chọn folder <code>chrome-extension/</code></li>
+            <li>Pin icon AIECOS lên toolbar</li>
+            <li>Click icon → nhập <b>Server URL</b> (sync receiver) + <b>API Token</b></li>
+            <li>Mở <code>app.pancake.vn</code> → extension tự sync mỗi phút</li>
+            <li>Bấm <b>SYNC ALL</b> để walk hết history</li>
+          </ol>
+        </div></div>
+      </div>
+
+      <div class="tab-content" id="tab-api">
+        <div class="card"><div class="card-body">
+          <h3 style="margin-top:0;">Sync receiver endpoints</h3>
+          <table>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+            <tr><td><code>GET</code></td><td><code>/api/status</code></td><td>Health check (public)</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/sync</code></td><td>Push messages (batch or single)</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/channel/register</code></td><td>Register a new page</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/channels</code></td><td>List registered pages</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/admin/refresh-aggregates</code></td><td>Recompute page counts</td></tr>
+          </table>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:14px;">
+            Auth: <code>X-AIECOS-Token: &lt;your-token&gt;</code> header on all protected endpoints.
+          </p>
+          <h3>Test with curl</h3>
+          <pre><button class="copy-btn" onclick="copyText(this)">copy</button><code>curl -X POST http://localhost:3500/api/sync \
+  -H "X-AIECOS-Token: $API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @examples/sample-batch-payload.json</code></pre>
+        </div></div>
+      </div>
     </section>
 
     <!-- ═══ SETTINGS ═══ -->
     <section class="section" id="sec-settings">
-      <div class="page-header">
-        <div>
-          <h1>Settings</h1>
-          <p>Cấu hình kết nối Supabase</p>
-        </div>
-      </div>
+      <div class="page-header"><div><h1>Settings</h1><p>Cấu hình kết nối Supabase</p></div></div>
       <div class="card"><div class="card-body">
         <div style="display:grid; grid-template-columns:160px 1fr; gap:12px 16px; align-items:center;">
           <label>Supabase URL</label>
@@ -231,10 +366,13 @@
           <label>Schema</label>
           <input id="cfgSchema" type="text" value="aiecos_social" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px;">
           <div></div>
-          <button class="btn btn-primary" onclick="saveConfig()">Save + reload</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary" onclick="saveConfig()">Save + reload</button>
+            <button class="btn" onclick="clearConfig()">Clear + use demo</button>
+          </div>
         </div>
         <p style="margin-top:16px; font-size:12px; color:var(--text-muted);">
-          Config được lưu trong <code>localStorage</code>. Để dùng production, set environment variables trên server.
+          Config lưu trong <code>localStorage</code>. Bỏ trống = chạy demo mode với sample data.
         </p>
       </div></div>
     </section>
@@ -243,12 +381,16 @@
 </div>
 
 <script>
-// ═══════════════ Config ═══════════════
+// ═══════════════ Config + state ═══════════════
 let CFG = {
   url: localStorage.getItem('sb_url') || '',
   key: localStorage.getItem('sb_key') || '',
   schema: localStorage.getItem('sb_schema') || 'aiecos_social',
 };
+let DEMO_MODE = false;
+let _customers = [], _messages = [], _conversations = [];
+let _selectedConv = null;
+let _reportRange = 30;
 
 function saveConfig() {
   CFG.url = document.getElementById('cfgUrl').value.trim();
@@ -259,11 +401,14 @@ function saveConfig() {
   localStorage.setItem('sb_schema', CFG.schema);
   location.reload();
 }
-
-function hdrs() {
-  return { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key, 'Accept-Profile': CFG.schema };
+function clearConfig() {
+  localStorage.removeItem('sb_url');
+  localStorage.removeItem('sb_key');
+  localStorage.removeItem('sb_schema');
+  location.reload();
 }
 
+function hdrs() { return { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key, 'Accept-Profile': CFG.schema }; }
 async function rest(path) {
   if (!CFG.url || !CFG.key) throw new Error('Not configured');
   const r = await fetch(`${CFG.url}/rest/v1/${path}`, { headers: hdrs() });
@@ -278,64 +423,75 @@ document.querySelectorAll('.nav-item').forEach(el => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('sec-' + el.dataset.sec).classList.add('active');
-    loadSection(el.dataset.sec);
   };
 });
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+function copyText(btn) {
+  const text = btn.parentElement.querySelector('code').textContent;
+  navigator.clipboard.writeText(text);
+  btn.textContent = '✓ copied';
+  setTimeout(() => btn.textContent = 'copy', 1500);
+}
 
 // ═══════════════ Helpers ═══════════════
-function daysSince(iso) {
-  if (!iso) return 9999;
-  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-}
-
+function daysSince(iso) { return iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86400000) : 9999; }
 function stage(d) {
-  if (d > 90) return 'churned';
-  if (d > 30) return 'dormant';
-  if (d > 7) return 'at_risk';
-  if (d >= 3) return 'sleeping';
-  return 'active';
+  if (d > 90) return 'churned'; if (d > 30) return 'dormant';
+  if (d > 7) return 'at_risk'; if (d >= 3) return 'sleeping'; return 'active';
 }
-
 const STAGE_COLOR = { active:'var(--green)', sleeping:'var(--yellow)', at_risk:'var(--orange)', dormant:'var(--pink)', churned:'var(--red)' };
-
-function esc(s) {
-  return String(s ?? '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'})[c]);
-}
+const STAGE_LABEL = { active:'ACTIVE', sleeping:'SLEEPING', at_risk:'AT-RISK', dormant:'DORMANT', churned:'CHURNED' };
+function esc(s) { return String(s ?? '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'})[c]); }
 
 // ═══════════════ Data loaders ═══════════════
-let _customers = [], _messages = [], _conversations = [];
-
 async function loadAll() {
+  // Decide: demo mode or live?
   if (!CFG.url || !CFG.key) {
-    document.getElementById('configWarning').innerHTML = `
-      <div class="config-warning">
-        ⚠ <b>Chưa cấu hình Supabase</b> — vào <a href="#" onclick="document.querySelector('[data-sec=settings]').click(); return false;" style="color:#92400e; font-weight:600;">Settings</a> để nhập URL + key.
-      </div>`;
-    return;
+    if (window.DEMO_DATA) {
+      DEMO_MODE = true;
+      document.getElementById('demoBadge').style.display = 'block';
+      document.getElementById('configWarning').innerHTML = `
+        <div class="config-info">
+          ℹ <b>Demo mode</b> — đang hiển thị sample data. Vào <a href="#" onclick="document.querySelector('[data-sec=settings]').click(); return false;"><b>Settings</b></a> để connect Supabase thật.
+        </div>`;
+      _customers = window.DEMO_DATA.customers.map(c => ({ ...c, _days: daysSince(c.last_seen_at), _stage: stage(daysSince(c.last_seen_at)) }));
+      _messages = window.DEMO_DATA.messages;
+      _conversations = window.DEMO_DATA.conversations;
+    } else {
+      document.getElementById('configWarning').innerHTML = `<div class="config-warning">⚠ Chưa cấu hình. Vào Settings.</div>`;
+      return;
+    }
+  } else {
+    DEMO_MODE = false;
+    document.getElementById('demoBadge').style.display = 'none';
+    document.getElementById('configWarning').innerHTML = '';
+    try {
+      const [cust, msgs, convs] = await Promise.all([
+        rest('customers?select=id,name,page_id,last_seen_at,first_seen_at&order=last_seen_at.desc.nullslast&limit=500'),
+        rest('messages?select=conversation_id,sender_type,sender_name,content,created_time&order=created_time.desc&limit=5000'),
+        rest('conversations?select=id,page_id,customer_name&limit=500'),
+      ]);
+      _customers = cust.map(c => ({ ...c, _days: daysSince(c.last_seen_at), _stage: stage(daysSince(c.last_seen_at)) }));
+      _messages = msgs;
+      _conversations = convs;
+    } catch (e) {
+      document.getElementById('configWarning').innerHTML = `<div class="config-warning">Lỗi tải data: ${esc(e.message)}</div>`;
+      return;
+    }
   }
-  document.getElementById('configWarning').innerHTML = '';
-
-  try {
-    const [cust, msgs, convs] = await Promise.all([
-      rest('customers?select=id,name,page_id,last_seen_at,first_seen_at&order=last_seen_at.desc.nullslast&limit=500'),
-      rest('messages?select=conversation_id,sender_type,sender_name,content,created_time&order=created_time.desc&limit=5000'),
-      rest('conversations?select=id,page_id,customer_name&limit=500'),
-    ]);
-    _customers = cust.map(c => ({ ...c, _days: daysSince(c.last_seen_at), _stage: stage(daysSince(c.last_seen_at)) }));
-    _messages = msgs;
-    _conversations = convs;
-    renderDashboard();
-    renderPipeline();
-    renderPartner360();
-    renderTriage();
-    renderPerformance();
-  } catch (e) {
-    document.getElementById('configWarning').innerHTML = `
-      <div class="config-warning">Lỗi tải data: ${esc(e.message)}</div>`;
-  }
+  renderDashboard();
+  renderTriage();
+  renderInbox();
+  renderPipeline();
+  renderPartner360();
+  renderPerformance();
+  renderReports();
 }
-
-function loadSection(name) { /* re-render only if needed; lazy */ }
 
 // ═══════════════ Dashboard ═══════════════
 let _trendChart;
@@ -348,39 +504,26 @@ function renderDashboard() {
   document.getElementById('kpiDormant').textContent = stages.dormant + stages.churned;
   document.getElementById('kpiMsgs').textContent = _messages.length;
 
-  // Trend: msgs per day last 14d
   const days = {};
-  for (let i=13; i>=0; i--) {
-    const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
-    days[d] = { customer:0, agent:0 };
-  }
-  _messages.forEach(m => {
-    const d = (m.created_time || '').slice(0,10);
-    if (days[d]) {
-      if (m.sender_type === 'agent') days[d].agent++;
-      else days[d].customer++;
-    }
-  });
+  for (let i=13; i>=0; i--) { const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10); days[d] = { customer:0, agent:0 }; }
+  _messages.forEach(m => { const d = (m.created_time||'').slice(0,10); if (days[d]) { if (m.sender_type==='agent') days[d].agent++; else days[d].customer++; } });
   const labels = Object.keys(days);
   const ctx = document.getElementById('trendChart').getContext('2d');
   if (_trendChart) _trendChart.destroy();
   _trendChart = new Chart(ctx, {
     type: 'line',
-    data: { labels: labels.map(d => d.slice(5)),
-      datasets: [
-        { label:'Customer', data: labels.map(d => days[d].customer), borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.1)', tension:.3, fill:true },
-        { label:'Agent', data: labels.map(d => days[d].agent), borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.1)', tension:.3, fill:true },
-      ]
-    },
+    data: { labels: labels.map(d => d.slice(5)), datasets: [
+      { label:'Customer', data: labels.map(d => days[d].customer), borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.1)', tension:.3, fill:true },
+      { label:'Agent', data: labels.map(d => days[d].agent), borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.1)', tension:.3, fill:true },
+    ]},
     options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } } }
   });
 
-  // Recent msgs
   const recent = _messages.slice(0, 10).map(m => `
     <div style="padding:10px 0; border-bottom:1px solid var(--border); display:flex; gap:12px;">
       <span style="font-size:11px; color:var(--text-muted); width:90px;">${(m.created_time||'').slice(0,19)}</span>
-      <span style="font-weight:600; width:120px; font-size:12px;">${esc((m.sender_name||'').slice(0,20))}</span>
-      <span style="flex:1; font-size:13px; color:var(--text);">${esc(m.content.slice(0,100))}</span>
+      <span style="font-weight:600; width:140px; font-size:12px; ${m.sender_type==='agent' ? 'color:var(--green);' : ''}">${esc((m.sender_name||'').slice(0,22))}</span>
+      <span style="flex:1; font-size:13px;">${esc(m.content.slice(0,100))}</span>
     </div>`).join('');
   document.getElementById('recentList').innerHTML = recent || '<div class="empty-state">No messages yet</div>';
 }
@@ -388,35 +531,28 @@ function renderDashboard() {
 // ═══════════════ Pipeline (Kanban) ═══════════════
 function renderPipeline() {
   const stages = ['active','sleeping','at_risk','dormant','churned'];
-  const labels = { active:'ACTIVE', sleeping:'SLEEPING', at_risk:'AT-RISK', dormant:'DORMANT', churned:'CHURNED' };
   const grouped = Object.fromEntries(stages.map(s => [s, _customers.filter(c => c._stage === s)]));
   document.getElementById('kanban').innerHTML = stages.map(s => `
     <div class="kanban-col">
       <div class="kanban-col-header">
-        <span class="dot" style="background:${STAGE_COLOR[s]}; width:8px; height:8px; border-radius:50%;"></span>
-        <span class="title">${labels[s]}</span>
+        <span style="background:${STAGE_COLOR[s]}; width:8px; height:8px; border-radius:50%;"></span>
+        <span class="title">${STAGE_LABEL[s]}</span>
         <span class="count">${grouped[s].length}</span>
       </div>
       <div class="kanban-col-body">
-        ${grouped[s].slice(0, 30).map(p => `
-          <div class="kanban-card">
-            <div class="name">${esc((p.name||'').slice(0,30))}</div>
-            <div class="meta">${p._days} ngày im</div>
-          </div>
-        `).join('') || '<div style="text-align:center; padding:20px; font-size:11px; color:var(--text-muted);">No partners</div>'}
+        ${grouped[s].slice(0,30).map(p => `<div class="kanban-card"><div class="name">${esc((p.name||'').slice(0,30))}</div><div class="meta">${p._days} ngày im</div></div>`).join('') || '<div style="text-align:center; padding:20px; font-size:11px; color:var(--text-muted);">Empty</div>'}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ═══════════════ Partner 360 (table) ═══════════════
+// ═══════════════ Partner 360 ═══════════════
 function renderPartner360() {
-  const html = _customers.slice(0, 100).map(p => `
+  const html = _customers.slice(0,100).map(p => `
     <tr>
       <td><b>${esc((p.name||'?').slice(0,40))}</b></td>
       <td><small style="color:var(--text-muted);">${esc((p.page_id||'').slice(0,30))}</small></td>
       <td><span style="padding:2px 8px; background:${STAGE_COLOR[p._stage]}22; color:${STAGE_COLOR[p._stage]}; border-radius:6px; font-size:11px; font-weight:600;">${p._stage.toUpperCase()}</span></td>
-      <td>${p._days < 9999 ? p._days + 'd' : '—'}</td>
+      <td>${p._days < 9999 ? p._days+'d' : '—'}</td>
       <td><small>${(p.last_seen_at||'').slice(0,19) || 'never'}</small></td>
     </tr>`).join('');
   document.getElementById('partnerTable').innerHTML = html || '<tr><td colspan="5" class="empty-state">No partners</td></tr>';
@@ -424,24 +560,55 @@ function renderPartner360() {
 
 // ═══════════════ Triage ═══════════════
 function renderTriage() {
-  const urgent = _customers.filter(p => p._stage === 'at_risk' || p._stage === 'sleeping').sort((a,b) => a._days - b._days).slice(0, 10);
-  const revival = _customers.filter(p => p._stage === 'dormant' || p._stage === 'churned').sort((a,b) => a._days - b._days).slice(0, 12);
-
+  const urgent = _customers.filter(p => p._stage==='at_risk' || p._stage==='sleeping').sort((a,b) => a._days - b._days).slice(0,10);
+  const revival = _customers.filter(p => p._stage==='dormant' || p._stage==='churned').sort((a,b) => a._days - b._days).slice(0,12);
   const renderCard = (p) => `
     <div style="padding:12px 14px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <div style="font-weight:600;">${esc(p.name||'?')}</div>
-        <div style="font-size:12px; color:var(--text-muted);">${p._days} ngày không tương tác · last contact: ${(p.last_seen_at||'').slice(0,10)}</div>
+        <div style="font-size:12px; color:var(--text-muted);">${p._days} ngày im · last: ${(p.last_seen_at||'').slice(0,10)}</div>
       </div>
       <span style="padding:2px 10px; background:${STAGE_COLOR[p._stage]}22; color:${STAGE_COLOR[p._stage]}; border-radius:6px; font-size:11px; font-weight:600;">${p._stage.toUpperCase()}</span>
     </div>`;
+  document.getElementById('triageUrgent').innerHTML = urgent.length ? urgent.map(renderCard).join('') : '<div class="empty-state"><h3>Không có partner cần outreach gấp</h3><p>Tất cả đang Active</p></div>';
+  document.getElementById('triagePending').innerHTML = revival.length ? revival.map(renderCard).join('') : '<div class="empty-state"><h3>Không có Dormant/Churned</h3></div>';
+}
 
-  document.getElementById('triageUrgent').innerHTML = urgent.length
-    ? urgent.map(renderCard).join('')
-    : '<div class="empty-state"><h3>Không có partner cần outreach gấp</h3><p>Tất cả partners đang Active</p></div>';
-  document.getElementById('triagePending').innerHTML = revival.length
-    ? revival.map(renderCard).join('')
-    : '<div class="empty-state"><h3>Không có partner Dormant / Churned</h3><p>Shop ngưng tương tác >30 ngày sẽ hiện ở đây</p></div>';
+// ═══════════════ Inbox (NEW) ═══════════════
+function renderInbox() {
+  // Build conv list with last msg snippet
+  const items = _conversations.map(c => {
+    const msgs = _messages.filter(m => m.conversation_id === c.id);
+    const latest = msgs[0]; // Already sorted desc
+    return { ...c, _latest: latest, _msgCount: msgs.length };
+  }).filter(c => c._latest).sort((a,b) => new Date(b._latest.created_time).getTime() - new Date(a._latest.created_time).getTime());
+
+  document.getElementById('inboxList').innerHTML = items.map(c => `
+    <div class="inbox-item ${_selectedConv === c.id ? 'active' : ''}" onclick="selectConv('${c.id}')">
+      <div class="name">${esc((c.customer_name||c.id).slice(0,30))}</div>
+      <div class="snippet">${esc(c._latest.content.slice(0,60))}</div>
+      <div class="meta"><span>${(c._latest.created_time||'').slice(0,19)}</span><span>${c._msgCount} msgs</span></div>
+    </div>`).join('') || '<div class="empty-state">No conversations</div>';
+
+  if (_selectedConv) renderInboxDetail();
+}
+function selectConv(id) {
+  _selectedConv = id;
+  renderInbox();
+  renderInboxDetail();
+}
+function renderInboxDetail() {
+  const conv = _conversations.find(c => c.id === _selectedConv);
+  if (!conv) return;
+  const msgs = _messages.filter(m => m.conversation_id === _selectedConv).slice(0, 50);
+  document.getElementById('inboxDetailHeader').innerHTML = `
+    <div style="font-weight:600;">${esc(conv.customer_name || conv.id)}</div>
+    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${msgs.length} messages · ${esc(conv.page_id)}</div>`;
+  document.getElementById('inboxDetailBody').innerHTML = msgs.map(m => `
+    <div class="msg-bubble ${m.sender_type}">
+      ${esc(m.content)}
+      <div class="meta">${esc(m.sender_name||'?')} · ${(m.created_time||'').slice(11,16)}</div>
+    </div>`).join('');
 }
 
 // ═══════════════ Performance ═══════════════
@@ -453,37 +620,56 @@ function renderPerformance() {
   document.getElementById('perfMsgs').textContent = total;
   document.getElementById('perfCust').textContent = cust;
   document.getElementById('perfAgent').textContent = agent;
-  document.getElementById('perfRate').textContent = total > 0 ? Math.round(agent/total*100) + '%' : '0%';
+  document.getElementById('perfRate').textContent = total > 0 ? Math.round(agent/total*100)+'%' : '0%';
 
+  // Trend
   const days = {};
-  for (let i=13; i>=0; i--) {
-    const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
-    days[d] = { customer:0, agent:0 };
-  }
-  _messages.forEach(m => {
-    const d = (m.created_time || '').slice(0,10);
-    if (days[d]) {
-      if (m.sender_type === 'agent') days[d].agent++;
-      else days[d].customer++;
-    }
-  });
+  for (let i=13; i>=0; i--) { const d = new Date(Date.now()-i*86400000).toISOString().slice(0,10); days[d] = {customer:0, agent:0}; }
+  _messages.forEach(m => { const d = (m.created_time||'').slice(0,10); if (days[d]) { if (m.sender_type==='agent') days[d].agent++; else days[d].customer++; } });
   const labels = Object.keys(days);
   const ctx = document.getElementById('perfTrend').getContext('2d');
   if (_perfChart) _perfChart.destroy();
   _perfChart = new Chart(ctx, {
     type: 'bar',
-    data: { labels: labels.map(d => d.slice(5)),
-      datasets: [
-        { label:'Customer', data: labels.map(d => days[d].customer), backgroundColor:'#3b82f6' },
-        { label:'Agent', data: labels.map(d => days[d].agent), backgroundColor:'#10b981' },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false, scales:{ x:{ stacked:true }, y:{ stacked:true } } }
+    data: { labels: labels.map(d => d.slice(5)), datasets: [
+      { label:'Customer', data: labels.map(d => days[d].customer), backgroundColor:'#3b82f6' },
+      { label:'Agent', data: labels.map(d => days[d].agent), backgroundColor:'#10b981' },
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, scales:{ x:{stacked:true}, y:{stacked:true} } }
   });
+
+  // Heatmap 7 days × 24 hours
+  const since30 = Date.now() - 30*86400000;
+  const heat = Array.from({length:7}, () => Array(24).fill(0));
+  _messages.forEach(m => {
+    const t = new Date(m.created_time).getTime();
+    if (t < since30) return;
+    const d = new Date(t);
+    heat[d.getDay()][d.getHours()]++;
+  });
+  const maxH = Math.max(...heat.flat(), 1);
+  const dayNames = ['CN','T2','T3','T4','T5','T6','T7'];
+  const cellColor = (v) => {
+    if (v === 0) return 'var(--bg-subtle)';
+    const intensity = Math.min(1, v / maxH);
+    const alpha = 0.2 + intensity * 0.8;
+    return `rgba(59,130,246,${alpha})`;
+  };
+  let heatHtml = '<div class="heatmap"><div></div>';
+  for (let h = 0; h < 24; h++) heatHtml += `<div style="text-align:center; color:var(--text-muted);">${h}</div>`;
+  for (let d = 0; d < 7; d++) {
+    heatHtml += `<div class="heatmap-label">${dayNames[d]}</div>`;
+    for (let h = 0; h < 24; h++) {
+      const v = heat[d][h];
+      heatHtml += `<div class="heatmap-cell" style="background:${cellColor(v)}; color:${v > maxH/2 ? '#fff' : 'var(--text-muted)'};" title="${dayNames[d]} ${h}h: ${v} msgs">${v||''}</div>`;
+    }
+  }
+  heatHtml += '</div>';
+  document.getElementById('perfHeatmap').innerHTML = heatHtml;
 
   // Top partners
   const counts = {};
-  _messages.forEach(m => { counts[m.conversation_id] = (counts[m.conversation_id]||0) + 1; });
+  _messages.forEach(m => { counts[m.conversation_id] = (counts[m.conversation_id]||0)+1; });
   const convMap = Object.fromEntries(_conversations.map(c => [c.id, c.customer_name || c.id]));
   const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,10);
   const max = top[0]?.[1] || 1;
@@ -495,12 +681,119 @@ function renderPerformance() {
     </div>`).join('') || '<div class="empty-state">No data</div>';
 }
 
+// ═══════════════ Reports (NEW) ═══════════════
+function setReportRange(days, btn) {
+  _reportRange = days;
+  document.querySelectorAll('#sec-reports .filter-segs button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderReports();
+}
+function renderReports() {
+  const since = Date.now() - _reportRange * 86400000;
+  const msgsInPeriod = _messages.filter(m => new Date(m.created_time).getTime() >= since);
+  const activeIds = new Set(msgsInPeriod.map(m => m.conversation_id));
+  const need = _customers.filter(c => c._stage === 'at_risk' || c._stage === 'dormant').length;
+
+  document.getElementById('rptPeriod').textContent = `last ${_reportRange}d`;
+  document.getElementById('rptMsgs').textContent = msgsInPeriod.length;
+  document.getElementById('rptActive').textContent = activeIds.size;
+  document.getElementById('rptNeed').textContent = need;
+
+  // Preview = mini summary
+  const stages = { active:0, sleeping:0, at_risk:0, dormant:0, churned:0 };
+  _customers.forEach(c => stages[c._stage]++);
+  document.getElementById('reportPreview').innerHTML = `
+    <h3 style="margin-top:0;">Summary report — last ${_reportRange} days</h3>
+    <p><b>Total partners:</b> ${_customers.length}</p>
+    <p><b>Messages in period:</b> ${msgsInPeriod.length} (${msgsInPeriod.filter(m => m.sender_type==='customer').length} from customers, ${msgsInPeriod.filter(m => m.sender_type==='agent').length} from agents)</p>
+    <p><b>Active partners:</b> ${activeIds.size}</p>
+    <h4>Stage distribution</h4>
+    <table style="width:100%;">
+      ${Object.entries(stages).map(([k,v]) => `<tr><td><span style="color:${STAGE_COLOR[k]}; font-weight:600;">●</span> ${STAGE_LABEL[k]}</td><td>${v}</td><td>${_customers.length > 0 ? (v/_customers.length*100).toFixed(1) : 0}%</td></tr>`).join('')}
+    </table>`;
+}
+function csvEscape(s) { s = String(s ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function downloadFile(filename, content, type='text/plain') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+function exportCSV(kind) {
+  let csv, filename;
+  if (kind === 'partners') {
+    csv = 'id,name,page_id,stage,days_silent,last_seen_at,first_seen_at\n';
+    _customers.forEach(c => {
+      csv += [c.id, c.name, c.page_id, c._stage, c._days, c.last_seen_at, c.first_seen_at].map(csvEscape).join(',') + '\n';
+    });
+    filename = `partners-${new Date().toISOString().slice(0,10)}.csv`;
+  } else {
+    csv = 'conversation_id,sender_type,sender_name,content,created_time\n';
+    _messages.forEach(m => {
+      csv += [m.conversation_id, m.sender_type, m.sender_name, m.content, m.created_time].map(csvEscape).join(',') + '\n';
+    });
+    filename = `messages-${new Date().toISOString().slice(0,10)}.csv`;
+  }
+  downloadFile(filename, csv, 'text/csv');
+}
+function exportJSON() {
+  downloadFile(`export-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify({ customers: _customers, messages: _messages, conversations: _conversations }, null, 2), 'application/json');
+}
+function exportHTMLReport() {
+  const since = Date.now() - _reportRange*86400000;
+  const msgsInPeriod = _messages.filter(m => new Date(m.created_time).getTime() >= since);
+  const stages = { active:0, sleeping:0, at_risk:0, dormant:0, churned:0 };
+  _customers.forEach(c => stages[c._stage]++);
+  const cust = msgsInPeriod.filter(m => m.sender_type==='customer').length;
+  const agent = msgsInPeriod.filter(m => m.sender_type==='agent').length;
+  const topPartners = _customers.filter(c => c._stage === 'at_risk' || c._stage === 'dormant').slice(0,10);
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AIECOS Report ${new Date().toISOString().slice(0,10)}</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width:900px; margin:40px auto; padding:0 20px; color:#0f172a; }
+    h1 { border-bottom:2px solid #0f172a; padding-bottom:8px; }
+    h2 { margin-top:30px; color:#475569; }
+    .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:20px 0; }
+    .kpi { background:#f3f4f6; padding:14px; border-radius:8px; }
+    .kpi .label { font-size:12px; color:#94a3b8; text-transform:uppercase; }
+    .kpi .value { font-size:24px; font-weight:700; margin-top:4px; }
+    table { width:100%; border-collapse:collapse; margin:10px 0; }
+    th, td { padding:8px 12px; text-align:left; border-bottom:1px solid #e5e7eb; font-size:13px; }
+    th { background:#f3f4f6; }
+    .footer { margin-top:40px; padding-top:20px; border-top:1px solid #e5e7eb; color:#94a3b8; font-size:11px; }
+  </style></head><body>
+    <h1>AIECOS Social CRM — Report</h1>
+    <p><b>Period:</b> last ${_reportRange} days · <b>Generated:</b> ${new Date().toISOString()}</p>
+
+    <h2>Key metrics</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="label">Total partners</div><div class="value">${_customers.length}</div></div>
+      <div class="kpi"><div class="label">Messages in period</div><div class="value">${msgsInPeriod.length}</div></div>
+      <div class="kpi"><div class="label">From customers</div><div class="value">${cust}</div></div>
+      <div class="kpi"><div class="label">From agents</div><div class="value">${agent}</div></div>
+    </div>
+
+    <h2>Partner stage distribution</h2>
+    <table><thead><tr><th>Stage</th><th>Count</th><th>%</th></tr></thead><tbody>
+      ${Object.entries(stages).map(([k,v]) => `<tr><td>${STAGE_LABEL[k]}</td><td>${v}</td><td>${_customers.length>0?(v/_customers.length*100).toFixed(1):0}%</td></tr>`).join('')}
+    </tbody></table>
+
+    <h2>Partners needing attention (At-Risk + Dormant — top 10)</h2>
+    <table><thead><tr><th>Partner</th><th>Stage</th><th>Days silent</th><th>Last contact</th></tr></thead><tbody>
+      ${topPartners.map(p => `<tr><td>${esc(p.name)}</td><td>${p._stage.toUpperCase()}</td><td>${p._days}d</td><td>${(p.last_seen_at||'').slice(0,10)}</td></tr>`).join('')}
+    </tbody></table>
+
+    <div class="footer">Generated by AIECOS Social CRM · https://github.com/aiecosvietnam/aiecos-social-crm</div>
+  </body></html>`;
+  downloadFile(`AIECOS-report-${new Date().toISOString().slice(0,10)}.html`, html, 'text/html');
+}
+
 // ═══════════════ Init ═══════════════
 document.getElementById('cfgUrl').value = CFG.url;
 document.getElementById('cfgKey').value = CFG.key;
 document.getElementById('cfgSchema').value = CFG.schema;
 loadAll();
 </script>
-
 </body>
 </html>

@@ -16,6 +16,9 @@ Open-source template to sync Pancake (Zalo OA / Facebook Messenger / Instagram) 
 - 🖥 Standalone admin UI (single HTML file) reads from Supabase REST API
 - 🤖 MCP server lets Claude / any MCP client query data directly via natural language
 - 📊 5-stage partner classification: Active / Sleeping / At-Risk / Dormant / Churned
+- 📄 Export CSV + printable HTML reports
+- 💬 Built-in Inbox (3-pane), Triage alerts, Pipeline kanban
+- 🎭 Demo mode — try the UI instantly without setting up Supabase
 
 **Stack:** Node.js + Express, Supabase (Postgres + PostgREST), Chrome Manifest V3, MCP SDK.
 
