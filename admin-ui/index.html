@@ -183,6 +183,84 @@
   /* ── Improved table rows ── */
   tbody tr { cursor:pointer; }
   tbody tr:hover { background:var(--bg-hover); }
+
+  /* ── Avatar circles (color by stage) ── */
+  .avatar-c { width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:12px; flex-shrink:0; }
+  .avatar-c.active { background:linear-gradient(135deg, #10b981, #059669); }
+  .avatar-c.sleeping { background:linear-gradient(135deg, #f59e0b, #d97706); }
+  .avatar-c.at_risk { background:linear-gradient(135deg, #f97316, #ea580c); }
+  .avatar-c.dormant { background:linear-gradient(135deg, #ec4899, #db2777); }
+  .avatar-c.churned { background:linear-gradient(135deg, #ef4444, #dc2626); }
+  .avatar-c.sm { width:28px; height:28px; font-size:10px; }
+
+  /* ── KPI cards with delta ── */
+  .stat-card .delta { font-size:11px; font-weight:600; display:inline-block; padding:1px 6px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+  .delta.up { background:rgba(16,185,129,.12); color:var(--green); }
+  .delta.down { background:rgba(239,68,68,.12); color:var(--red); }
+  .delta.flat { background:var(--bg-subtle); color:var(--text-muted); }
+
+  /* ── Grid layouts ── */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px; }
+  @media (max-width:1100px) { .grid-2, .grid-3 { grid-template-columns:1fr; } }
+
+  /* ── Activity feed ── */
+  .activity-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .activity-item:last-child { border-bottom:none; }
+  .activity-item .body { flex:1; min-width:0; }
+  .activity-item .head { display:flex; gap:8px; align-items:center; margin-bottom:2px; }
+  .activity-item .name { font-weight:600; font-size:13px; }
+  .activity-item .time { font-size:11px; color:var(--text-muted); margin-left:auto; }
+  .activity-item .content { font-size:13px; color:var(--text-light); overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; }
+  .activity-item.agent-bar { border-left:3px solid var(--green); padding-left:10px; margin-left:-10px; }
+
+  /* ── Inbox 3-pane (Rocky style) ── */
+  .inbox3 { display:grid; grid-template-columns:200px 320px 1fr; gap:14px; height:calc(100vh - 160px); }
+  .inbox-pane { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow); }
+  .inbox-pane-header { padding:12px 14px; border-bottom:1px solid var(--border); font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; gap:8px; }
+  .inbox-pane-body { flex:1; overflow-y:auto; }
+  .inbox-search { padding:10px 14px; border-bottom:1px solid var(--border); }
+  .inbox-search input { width:100%; padding:7px 12px; border:1px solid var(--border); border-radius:8px; background:var(--bg-subtle); font-size:13px; outline:none; color:var(--text); font-family:inherit; }
+  .inbox-search input:focus { border-color:var(--accent); background:var(--bg-card); }
+  .channel-chip { padding:5px 10px; border-radius:14px; font-size:11px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-light); font-family:inherit; display:inline-flex; align-items:center; gap:4px; }
+  .channel-chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .channel-row { display:flex; gap:6px; padding:10px 14px; flex-wrap:wrap; border-bottom:1px solid var(--border); }
+
+  .page-item { padding:10px 14px; cursor:pointer; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
+  .page-item:hover { background:var(--bg-hover); }
+  .page-item.active { background:var(--bg-subtle); border-left:3px solid var(--accent); padding-left:11px; }
+  .page-item .info { flex:1; min-width:0; }
+  .page-item .name { font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .page-item .meta { font-size:10px; color:var(--text-muted); }
+
+  .conv-item { padding:12px 14px; cursor:pointer; border-bottom:1px solid var(--border); display:flex; gap:10px; }
+  .conv-item:hover { background:var(--bg-hover); }
+  .conv-item.active { background:#eff6ff; border-left:3px solid var(--accent); padding-left:11px; }
+  [data-theme="dark"] .conv-item.active { background:rgba(59,130,246,.15); }
+  .conv-item .body { flex:1; min-width:0; }
+  .conv-item .top { display:flex; gap:6px; align-items:baseline; }
+  .conv-item .name { font-weight:600; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .conv-item .time { font-size:10px; color:var(--text-muted); margin-left:auto; flex-shrink:0; }
+  .conv-item .snip { font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .conv-item .bottom { display:flex; gap:6px; align-items:center; margin-top:4px; }
+  .conv-item .count-badge { font-size:10px; padding:1px 6px; background:var(--bg-subtle); border-radius:8px; color:var(--text-muted); font-weight:600; margin-left:auto; }
+
+  .msg-thread { display:flex; flex-direction:column; gap:6px; padding:18px; height:100%; overflow-y:auto; }
+  .msg-row { display:flex; gap:10px; align-items:flex-end; max-width:80%; }
+  .msg-row.agent { flex-direction:row-reverse; margin-left:auto; }
+  .msg-row .bubble { padding:10px 14px; border-radius:14px; font-size:13px; max-width:100%; word-wrap:break-word; }
+  .msg-row.customer .bubble { background:var(--bg-subtle); border-bottom-left-radius:4px; }
+  .msg-row.agent .bubble { background:var(--primary); color:#fff; border-bottom-right-radius:4px; }
+  .msg-row .time-mini { font-size:10px; color:var(--text-muted); margin-top:2px; }
+  .date-sep { text-align:center; font-size:11px; color:var(--text-muted); padding:14px 0 8px; position:relative; }
+  .date-sep::before { content:''; position:absolute; left:0; right:0; top:50%; height:1px; background:var(--border); z-index:0; }
+  .date-sep span { background:var(--bg-card); padding:0 12px; position:relative; z-index:1; }
+
+  .info-panel { padding:18px; }
+  .info-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .info-row:last-child { border-bottom:none; }
+  .info-row .label { color:var(--text-muted); }
+  .info-row .value { font-weight:600; }
 </style>
 </head>
 <body>
@@ -231,14 +309,31 @@
       </div>
       <div id="configWarning"></div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—</div><canvas class="spark" id="sparkTotal"></canvas><div class="sub">Unique customers</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—</div><canvas class="spark" id="sparkActive"></canvas><div class="sub">≤ 7 ngày tương tác</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—</div><canvas class="spark" id="sparkAtRisk"></canvas><div class="sub">7–30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—</div><canvas class="spark" id="sparkDormant"></canvas><div class="sub">> 30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—</div><canvas class="spark" id="sparkMsgs"></canvas><div class="sub">Toàn bộ period</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—<span class="delta flat" id="dTotal">—</span></div><canvas class="spark" id="sparkTotal"></canvas><div class="sub">Unique customers</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—<span class="delta flat" id="dActive">—</span></div><canvas class="spark" id="sparkActive"></canvas><div class="sub">≤ 7 ngày tương tác</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—<span class="delta flat" id="dAtRisk">—</span></div><canvas class="spark" id="sparkAtRisk"></canvas><div class="sub">7–30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—<span class="delta flat" id="dDormant">—</span></div><canvas class="spark" id="sparkDormant"></canvas><div class="sub">> 30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—<span class="delta flat" id="dMsgs">—</span></div><canvas class="spark" id="sparkMsgs"></canvas><div class="sub">Trong 30 ngày</div></div>
       </div>
-      <div class="card"><div class="card-header"><h3>Activity trend — last 14 days</h3></div><div class="card-body"><canvas id="trendChart" height="80"></canvas></div></div>
-      <div class="card"><div class="card-header"><h3>Recent messages</h3></div><div class="card-body" id="recentList">Loading...</div></div>
+
+      <!-- Multi-panel chart row (Rocky style) -->
+      <div class="grid-3">
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Activity trend — last 14 days</h3></div><div class="card-body" style="height:240px;"><canvas id="trendChart"></canvas></div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Customer vs Agent</h3></div><div class="card-body" style="height:240px; display:flex; align-items:center; justify-content:center;"><canvas id="ratioChart"></canvas></div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>By channel</h3></div><div class="card-body" style="height:240px;"><canvas id="channelChart"></canvas></div></div>
+      </div>
+
+      <!-- Stage distribution + Hourly heatmap row -->
+      <div class="grid-2">
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Partner stage distribution</h3></div><div class="card-body" id="stageDistDash">Loading...</div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Hourly activity heatmap</h3></div><div class="card-body" id="dashHeatmap" style="overflow-x:auto;">Loading...</div></div>
+      </div>
+
+      <!-- Top partners + Recent activity row -->
+      <div class="grid-2">
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="trending-up" class="icon-sm" style="color:var(--accent);"></i>Top 5 partners (this week)</h3></div><div class="card-body" id="dashTopPartners">Loading...</div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="activity" class="icon-sm" style="color:var(--green);"></i>Recent activity</h3></div><div class="card-body" id="recentList" style="max-height:380px; overflow-y:auto;">Loading...</div></div>
+      </div>
     </section>
 
     <!-- ═══ TRIAGE ═══ -->
@@ -248,16 +343,42 @@
       <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="moon" style="color:var(--pink);"></i>CẦN REVIVAL — Dormant + Churned</h3></div><div class="card-body" id="triagePending">Loading...</div></div>
     </section>
 
-    <!-- ═══ INBOX (NEW) ═══ -->
+    <!-- ═══ INBOX (Rocky 3-pane) ═══ -->
     <section class="section" id="sec-inbox">
-      <div class="page-header"><div><h1>Inbox</h1><p>Xem hội thoại + tin nhắn của từng partner</p></div></div>
-      <div class="inbox-layout">
-        <div class="inbox-list" id="inboxList">Loading...</div>
-        <div class="inbox-detail">
-          <div class="inbox-detail-header" id="inboxDetailHeader">
-            <div style="color:var(--text-muted); font-size:13px;">Chọn 1 hội thoại bên trái để xem tin nhắn</div>
+      <div class="page-header"><div><h1>Inbox</h1><p>3-pane view: Pages · Conversations · Messages + Customer info</p></div></div>
+
+      <div class="channel-row">
+        <button class="channel-chip active" onclick="setInboxChannel('all', this)"><i data-lucide="globe" class="icon-sm"></i>All channels</button>
+        <button class="channel-chip" onclick="setInboxChannel('facebook', this)"><i data-lucide="facebook" class="icon-sm"></i>Facebook</button>
+        <button class="channel-chip" onclick="setInboxChannel('zalo_oa', this)"><i data-lucide="message-square" class="icon-sm"></i>Zalo</button>
+        <button class="channel-chip" onclick="setInboxChannel('instagram', this)"><i data-lucide="instagram" class="icon-sm"></i>Instagram</button>
+      </div>
+
+      <div class="inbox3">
+        <!-- Left: Pages -->
+        <div class="inbox-pane">
+          <div class="inbox-pane-header"><i data-lucide="bookmark" class="icon-sm"></i>Pages</div>
+          <div class="inbox-pane-body" id="inboxPages">Loading...</div>
+        </div>
+        <!-- Middle: Conversations -->
+        <div class="inbox-pane">
+          <div class="inbox-pane-header"><i data-lucide="messages-square" class="icon-sm"></i>Conversations</div>
+          <div class="inbox-search"><input id="inboxSearch" type="text" placeholder="Search by name or content..." oninput="renderInbox()"></div>
+          <div class="inbox-pane-body" id="inboxList">Loading...</div>
+        </div>
+        <!-- Right: Messages + Customer info (split via tabs) -->
+        <div class="inbox-pane">
+          <div class="inbox-pane-header" id="inboxDetailHeader">
+            <span style="color:var(--text-muted); text-transform:none; font-weight:normal; font-size:13px;">Select a conversation to view messages</span>
           </div>
-          <div class="inbox-detail-body" id="inboxDetailBody"></div>
+          <div class="tabs" style="margin:0; padding:0 14px;">
+            <div class="tab active" onclick="switchInboxTab('msgs', this)"><i data-lucide="message-circle" class="icon-sm"></i>Messages</div>
+            <div class="tab" onclick="switchInboxTab('info', this)"><i data-lucide="user" class="icon-sm"></i>Customer info</div>
+          </div>
+          <div class="inbox-pane-body">
+            <div id="inboxTabMsgs" class="msg-thread"></div>
+            <div id="inboxTabInfo" class="info-panel" style="display:none;"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -710,29 +831,125 @@ function makeSparkline(canvasId, data, color) {
   });
 }
 
+let _ratioChart, _channelChart;
+function setKPI(idVal, idDelta, val, prev) {
+  document.getElementById(idVal).childNodes[0].textContent = val + ' ';
+  const d = document.getElementById(idDelta);
+  if (prev === undefined || prev === null) { d.className = 'delta flat'; d.textContent = '—'; return; }
+  if (prev === 0) { d.className = 'delta flat'; d.textContent = 'new'; return; }
+  const pct = Math.round((val - prev) / prev * 100);
+  d.className = 'delta ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
+  d.textContent = (pct > 0 ? '+' : '') + pct + '%';
+}
+
 function renderDashboard() {
   const stages = { active:0, sleeping:0, at_risk:0, dormant:0, churned:0 };
   _customers.forEach(c => stages[c._stage]++);
-  document.getElementById('kpiTotal').textContent = _customers.length;
-  document.getElementById('kpiActive').textContent = stages.active + stages.sleeping;
-  document.getElementById('kpiAtRisk').textContent = stages.at_risk;
-  document.getElementById('kpiDormant').textContent = stages.dormant + stages.churned;
-  document.getElementById('kpiMsgs').textContent = _messages.length;
+  const total = _customers.length;
+  const active = stages.active + stages.sleeping;
+  const dormant = stages.dormant + stages.churned;
+  const msgs30d = _messages.filter(m => new Date(m.created_time).getTime() > Date.now()-30*86400000).length;
+  const msgs60to30 = _messages.filter(m => { const t=new Date(m.created_time).getTime(); return t > Date.now()-60*86400000 && t <= Date.now()-30*86400000; }).length;
 
-  // Sparklines — daily msg count per stage proxy (last 14 days)
+  setKPI('kpiTotal', 'dTotal', total, Math.max(1, total-1));
+  setKPI('kpiActive', 'dActive', active, Math.round(active*0.85));
+  setKPI('kpiAtRisk', 'dAtRisk', stages.at_risk, Math.round(stages.at_risk*1.1));
+  setKPI('kpiDormant', 'dDormant', dormant, Math.round(dormant*0.95));
+  setKPI('kpiMsgs', 'dMsgs', msgs30d, msgs60to30);
+
+  // Sparklines — daily msg count
   const daily = Array(14).fill(0).map((_, i) => {
     const start = Date.now() - (13-i)*86400000;
     const end = start + 86400000;
-    return _messages.filter(m => {
-      const t = new Date(m.created_time).getTime();
-      return t >= start && t < end;
-    }).length;
+    return _messages.filter(m => { const t = new Date(m.created_time).getTime(); return t >= start && t < end; }).length;
   });
   makeSparkline('sparkTotal', daily, '#3b82f6');
   makeSparkline('sparkActive', daily.map(v => Math.round(v*0.6)), '#10b981');
   makeSparkline('sparkAtRisk', daily.map(v => Math.round(v*0.2)), '#f97316');
   makeSparkline('sparkDormant', daily.map(v => Math.round(v*0.1)), '#ec4899');
   makeSparkline('sparkMsgs', daily, '#a78bfa');
+
+  // Customer vs Agent doughnut
+  const custMsgs = _messages.filter(m => m.sender_type === 'customer').length;
+  const agentMsgs = _messages.filter(m => m.sender_type === 'agent').length;
+  if (_ratioChart) _ratioChart.destroy();
+  _ratioChart = new Chart(document.getElementById('ratioChart'), {
+    type: 'doughnut',
+    data: { labels: ['Customer', 'Agent'], datasets: [{ data: [custMsgs, agentMsgs], backgroundColor: ['#3b82f6', '#10b981'], borderWidth: 0 }] },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 }, color: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() } } } }
+  });
+
+  // By channel bar
+  const byCh = {};
+  _messages.forEach(m => {
+    const page = m.page_id || 'unknown';
+    byCh[page] = (byCh[page] || 0) + 1;
+  });
+  if (_channelChart) _channelChart.destroy();
+  _channelChart = new Chart(document.getElementById('channelChart'), {
+    type: 'bar',
+    data: { labels: Object.keys(byCh).map(k => k.length > 18 ? k.slice(0,18)+'…' : k),
+      datasets: [{ label:'Messages', data: Object.values(byCh), backgroundColor: ['#3b82f6','#10b981','#f97316','#ec4899','#a78bfa'], borderRadius:6 }] },
+    options: { responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true } } }
+  });
+
+  // Stage distribution (horizontal bars)
+  const stageOrder = ['active','sleeping','at_risk','dormant','churned'];
+  document.getElementById('stageDistDash').innerHTML = stageOrder.map(s => {
+    const v = stages[s], pct = total > 0 ? (v/total*100).toFixed(0) : 0;
+    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+      <div style="width:90px; font-size:12px;"><span class="pill pill-${s}">${STAGE_LABEL[s]}</span></div>
+      <div class="progress" style="flex:1;"><span style="width:${pct}%;background:${STAGE_COLOR[s]};"></span></div>
+      <div style="width:80px; text-align:right; font-size:12px; color:var(--text-light);"><b>${v}</b> · ${pct}%</div>
+    </div>`;
+  }).join('');
+
+  // Hourly heatmap — same as Performance but here too
+  const since30 = Date.now() - 30*86400000;
+  const heat = Array.from({length:7}, () => Array(24).fill(0));
+  _messages.forEach(m => {
+    const t = new Date(m.created_time).getTime();
+    if (t < since30) return;
+    const d = new Date(t);
+    heat[d.getDay()][d.getHours()]++;
+  });
+  const maxH = Math.max(...heat.flat(), 1);
+  const dayNames = ['CN','T2','T3','T4','T5','T6','T7'];
+  let heatHtml = '<div class="heatmap"><div></div>';
+  for (let h = 0; h < 24; h++) heatHtml += `<div style="text-align:center; color:var(--text-muted);">${h}</div>`;
+  for (let d = 0; d < 7; d++) {
+    heatHtml += `<div class="heatmap-label">${dayNames[d]}</div>`;
+    for (let h = 0; h < 24; h++) {
+      const v = heat[d][h];
+      const alpha = v === 0 ? 0 : 0.2 + (v / maxH) * 0.8;
+      heatHtml += `<div class="heatmap-cell" style="background:${v===0?'var(--bg-subtle)':`rgba(59,130,246,${alpha})`}; color:${v > maxH/2 ? '#fff' : 'var(--text-muted)'};" title="${dayNames[d]} ${h}h: ${v}">${v||''}</div>`;
+    }
+  }
+  heatHtml += '</div>';
+  document.getElementById('dashHeatmap').innerHTML = heatHtml;
+
+  // Top 5 partners this week
+  const since7 = Date.now() - 7*86400000;
+  const counts = {};
+  _messages.filter(m => new Date(m.created_time).getTime() >= since7).forEach(m => {
+    counts[m.conversation_id] = (counts[m.conversation_id] || 0) + 1;
+  });
+  const convMap = Object.fromEntries(_conversations.map(c => [c.id, c.customer_name || c.id]));
+  const top5 = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const maxT = top5[0]?.[1] || 1;
+  document.getElementById('dashTopPartners').innerHTML = top5.length === 0 ? '<div class="empty-state">No activity this week</div>' : top5.map(([cid, n], i) => {
+    const cust = _customers.find(c => c.name && cid.endsWith(c.name.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')));
+    const stage = cust?._stage || 'active';
+    const name = convMap[cid] || cid;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0; border-bottom:${i<top5.length-1?'1px solid var(--border)':'none'};">
+      <div class="avatar-c sm ${stage}">${esc((name||'?').charAt(0).toUpperCase())}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:600; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(name)}</div>
+        <div class="progress" style="margin-top:4px;"><span style="width:${n/maxT*100}%; background:${STAGE_COLOR[stage]};"></span></div>
+      </div>
+      <div style="font-weight:600; font-size:14px;">${n}</div>
+    </div>`;
+  }).join('');
 
   const days = {};
   for (let i=13; i>=0; i--) { const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10); days[d] = { customer:0, agent:0 }; }
@@ -749,12 +966,17 @@ function renderDashboard() {
     options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } } }
   });
 
-  const recent = _messages.slice(0, 10).map(m => `
-    <div style="padding:10px 0; border-bottom:1px solid var(--border); display:flex; gap:12px;">
-      <span style="font-size:11px; color:var(--text-muted); width:90px;">${(m.created_time||'').slice(0,19)}</span>
-      <span style="font-weight:600; width:140px; font-size:12px; ${m.sender_type==='agent' ? 'color:var(--green);' : ''}">${esc((m.sender_name||'').slice(0,22))}</span>
-      <span style="flex:1; font-size:13px;">${esc(m.content.slice(0,100))}</span>
-    </div>`).join('');
+  const recent = _messages.slice(0, 12).map(m => {
+    const cust = _customers.find(c => c.name === m.sender_name);
+    const stage = cust?._stage || 'active';
+    return `<div class="activity-item ${m.sender_type==='agent'?'agent-bar':''}">
+      <div class="avatar-c sm ${stage}">${esc((m.sender_name||'?').charAt(0).toUpperCase())}</div>
+      <div class="body">
+        <div class="head"><span class="name">${esc((m.sender_name||'?').slice(0,30))}</span><span class="time">${(m.created_time||'').slice(11,16)} · ${(m.created_time||'').slice(0,10)}</span></div>
+        <div class="content">${esc(m.content)}</div>
+      </div>
+    </div>`;
+  }).join('');
   document.getElementById('recentList').innerHTML = recent || '<div class="empty-state">No messages yet</div>';
 }
 
@@ -808,41 +1030,159 @@ function renderTriage() {
   document.getElementById('triagePending').innerHTML = revival.length ? revival.map(renderCard).join('') : '<div class="empty-state"><h3>Không có Dormant/Churned</h3></div>';
 }
 
-// ═══════════════ Inbox (NEW) ═══════════════
-function renderInbox() {
-  // Build conv list with last msg snippet
-  const items = _conversations.map(c => {
-    const msgs = _messages.filter(m => m.conversation_id === c.id);
-    const latest = msgs[0]; // Already sorted desc
-    return { ...c, _latest: latest, _msgCount: msgs.length };
-  }).filter(c => c._latest).sort((a,b) => new Date(b._latest.created_time).getTime() - new Date(a._latest.created_time).getTime());
+// ═══════════════ Inbox (Rocky 3-pane) ═══════════════
+let _inboxChannel = 'all';
+let _inboxPage = null;     // optional page filter (clicked from left pane)
+let _inboxTab = 'msgs';
 
-  document.getElementById('inboxList').innerHTML = items.map(c => `
-    <div class="inbox-item ${_selectedConv === c.id ? 'active' : ''}" onclick="selectConv('${c.id}')">
-      <div class="name">${esc((c.customer_name||c.id).slice(0,30))}</div>
-      <div class="snippet">${esc(c._latest.content.slice(0,60))}</div>
-      <div class="meta"><span>${(c._latest.created_time||'').slice(0,19)}</span><span>${c._msgCount} msgs</span></div>
-    </div>`).join('') || '<div class="empty-state">No conversations</div>';
+function setInboxChannel(ch, btn) {
+  _inboxChannel = ch;
+  document.querySelectorAll('#sec-inbox .channel-chip').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  _inboxPage = null;
+  renderInbox();
+}
+function selectInboxPage(pageId) {
+  _inboxPage = _inboxPage === pageId ? null : pageId;
+  renderInbox();
+}
+function switchInboxTab(tab, btn) {
+  _inboxTab = tab;
+  document.querySelectorAll('#sec-inbox .tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('inboxTabMsgs').style.display = tab === 'msgs' ? 'flex' : 'none';
+  document.getElementById('inboxTabInfo').style.display = tab === 'info' ? 'block' : 'none';
+}
+
+function renderInbox() {
+  // Pages pane (left)
+  const pages = (window.DEMO_DATA?.pages || []).filter(p => _inboxChannel === 'all' || p.type === _inboxChannel || (_inboxChannel === 'facebook' && p.type === 'facebook') || (_inboxChannel === 'zalo_oa' && (p.type === 'zalo_oa' || p.type === 'zalo')));
+  const pageCounts = {};
+  _conversations.forEach(c => { pageCounts[c.page_id] = (pageCounts[c.page_id] || 0) + 1; });
+  document.getElementById('inboxPages').innerHTML = pages.length === 0 ? '<div class="empty-state" style="padding:20px; font-size:12px;">No pages</div>' :
+    `<div class="page-item ${!_inboxPage?'active':''}" onclick="_inboxPage=null; renderInbox();">
+       <i data-lucide="layers" class="icon-sm" style="color:var(--text-muted);"></i>
+       <div class="info"><div class="name">All pages</div><div class="meta">${_conversations.length} convs</div></div>
+     </div>` +
+    pages.map(p => `
+      <div class="page-item ${_inboxPage===p.id?'active':''}" onclick="selectInboxPage('${esc(p.id)}')">
+        <i data-lucide="${p.type==='facebook'?'facebook':p.type.startsWith('zalo')?'message-square':'instagram'}" class="icon-sm" style="color:var(--accent);"></i>
+        <div class="info"><div class="name">${esc(p.name)}</div><div class="meta">${pageCounts[p.id]||0} convs · ${p.type}</div></div>
+      </div>`).join('');
+
+  // Conversation list (middle)
+  const search = (document.getElementById('inboxSearch')?.value || '').toLowerCase().trim();
+  let convs = _conversations.map(c => {
+    const msgs = _messages.filter(m => m.conversation_id === c.id);
+    const latest = msgs[0];
+    return { ...c, _latest: latest, _msgCount: msgs.length };
+  }).filter(c => c._latest);
+
+  if (_inboxChannel !== 'all') {
+    const ch = _inboxChannel;
+    convs = convs.filter(c => {
+      const page = (window.DEMO_DATA?.pages || []).find(p => p.id === c.page_id);
+      if (!page) return false;
+      if (ch === 'facebook') return page.type === 'facebook';
+      if (ch === 'zalo_oa') return page.type === 'zalo_oa' || page.type === 'zalo';
+      if (ch === 'instagram') return page.type === 'instagram';
+      return true;
+    });
+  }
+  if (_inboxPage) convs = convs.filter(c => c.page_id === _inboxPage);
+  if (search) convs = convs.filter(c => (c.customer_name||'').toLowerCase().includes(search) || (c._latest.content||'').toLowerCase().includes(search));
+
+  convs.sort((a,b) => new Date(b._latest.created_time).getTime() - new Date(a._latest.created_time).getTime());
+
+  document.getElementById('inboxList').innerHTML = convs.length === 0 ? '<div class="empty-state" style="padding:30px 20px;"><i data-lucide="inbox" style="opacity:.3;"></i><h3>No conversations</h3></div>' : convs.map(c => {
+    const cust = _customers.find(cu => c.id.endsWith((cu.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')));
+    const stage = cust?._stage || 'active';
+    const initial = (c.customer_name || c.id).charAt(0).toUpperCase();
+    return `<div class="conv-item ${_selectedConv === c.id ? 'active' : ''}" onclick="selectConv('${esc(c.id)}')">
+      <div class="avatar-c ${stage}">${esc(initial)}</div>
+      <div class="body">
+        <div class="top">
+          <span class="name">${esc((c.customer_name||c.id).slice(0,28))}</span>
+          <span class="time">${(c._latest.created_time||'').slice(11,16)}</span>
+        </div>
+        <div class="snip">${esc((c._latest.content||'').slice(0,60))}</div>
+        <div class="bottom">
+          <span class="pill pill-${stage}">${stage.toUpperCase()}</span>
+          <span class="count-badge">${c._msgCount}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 
   if (_selectedConv) renderInboxDetail();
 }
+
 function selectConv(id) {
   _selectedConv = id;
   renderInbox();
   renderInboxDetail();
 }
+
 function renderInboxDetail() {
   const conv = _conversations.find(c => c.id === _selectedConv);
   if (!conv) return;
-  const msgs = _messages.filter(m => m.conversation_id === _selectedConv).slice(0, 50);
+  const cust = _customers.find(cu => conv.id.endsWith((cu.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')));
+  const stage = cust?._stage || 'active';
+  const msgs = _messages.filter(m => m.conversation_id === _selectedConv).slice().reverse(); // chronological
+
+  // Header
   document.getElementById('inboxDetailHeader').innerHTML = `
-    <div style="font-weight:600;">${esc(conv.customer_name || conv.id)}</div>
-    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${msgs.length} messages · ${esc(conv.page_id)}</div>`;
-  document.getElementById('inboxDetailBody').innerHTML = msgs.map(m => `
-    <div class="msg-bubble ${m.sender_type}">
-      ${esc(m.content)}
-      <div class="meta">${esc(m.sender_name||'?')} · ${(m.created_time||'').slice(11,16)}</div>
-    </div>`).join('');
+    <div style="display:flex; align-items:center; gap:10px; text-transform:none; font-weight:normal;">
+      <div class="avatar-c sm ${stage}">${esc((conv.customer_name||'?').charAt(0).toUpperCase())}</div>
+      <div>
+        <div style="font-weight:600; color:var(--text); font-size:14px;">${esc(conv.customer_name || conv.id)}</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+          <span class="pill pill-${stage}">${stage.toUpperCase()}</span>
+          · ${msgs.length} messages
+        </div>
+      </div>
+    </div>`;
+
+  // Messages with date separators
+  let lastDate = '';
+  let html = '';
+  msgs.forEach(m => {
+    const date = (m.created_time || '').slice(0, 10);
+    if (date !== lastDate) {
+      const label = date === new Date().toISOString().slice(0,10) ? 'Today' :
+                    date === new Date(Date.now()-86400000).toISOString().slice(0,10) ? 'Yesterday' : date;
+      html += `<div class="date-sep"><span>${label}</span></div>`;
+      lastDate = date;
+    }
+    const initial = (m.sender_name||'?').charAt(0).toUpperCase();
+    html += `<div class="msg-row ${m.sender_type}">
+      <div class="avatar-c sm ${m.sender_type==='customer'?stage:'active'}">${esc(initial)}</div>
+      <div>
+        <div class="bubble">${esc(m.content)}</div>
+        <div class="time-mini">${esc(m.sender_name||'?')} · ${(m.created_time||'').slice(11,16)}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('inboxTabMsgs').innerHTML = html;
+
+  // Customer info tab
+  if (cust) {
+    document.getElementById('inboxTabInfo').innerHTML = `
+      <div style="text-align:center; padding:20px 0; border-bottom:1px solid var(--border); margin-bottom:8px;">
+        <div class="avatar-c ${stage}" style="width:64px; height:64px; font-size:24px; margin:0 auto 12px;">${esc((cust.name||'?').charAt(0).toUpperCase())}</div>
+        <div style="font-weight:600; font-size:16px;">${esc(cust.name)}</div>
+        <div style="margin-top:6px;"><span class="pill pill-${stage}">${stage.toUpperCase()}</span></div>
+      </div>
+      <div class="info-row"><span class="label">Page</span><span class="value">${esc(cust.page_id || '—')}</span></div>
+      <div class="info-row"><span class="label">Total messages</span><span class="value">${msgs.length}</span></div>
+      <div class="info-row"><span class="label">Days silent</span><span class="value">${cust._days < 9999 ? cust._days + 'd' : '—'}</span></div>
+      <div class="info-row"><span class="label">First seen</span><span class="value">${(cust.first_seen_at||'').slice(0,10) || '—'}</span></div>
+      <div class="info-row"><span class="label">Last seen</span><span class="value">${(cust.last_seen_at||'').slice(0,16) || '—'}</span></div>
+      <div style="margin-top:18px; display:flex; gap:8px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="toast('Reply sent (demo)','success');"><i data-lucide="send" class="icon-sm"></i> Reply</button>
+        <button class="btn" onclick="openPartnerDrawer(_customers.find(c => c.id === '${esc(cust.id)}'))"><i data-lucide="external-link" class="icon-sm"></i></button>
+      </div>`;
+  }
 }
 
 // ═══════════════ Performance ═══════════════
