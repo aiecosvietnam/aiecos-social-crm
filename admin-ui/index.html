@@ -9,12 +9,22 @@
 <script src="demo-data.js"></script>
 <style>
   :root {
-    --bg:#fafafa; --bg-card:#fff; --bg-subtle:#f3f4f6;
+    --bg:#fafafa; --bg-card:#fff; --bg-subtle:#f3f4f6; --bg-hover:#f8fafc;
     --text:#0f172a; --text-light:#475569; --text-muted:#94a3b8;
-    --border:#e5e7eb; --primary:#0f172a; --accent:#3b82f6;
+    --border:#e5e7eb; --border-strong:#cbd5e1;
+    --primary:#0f172a; --primary-hover:#1e293b; --accent:#3b82f6;
     --green:#10b981; --orange:#f97316; --pink:#ec4899; --purple:#a78bfa;
     --red:#ef4444; --yellow:#f59e0b;
-    --shadow:0 1px 2px rgba(0,0,0,.04); --shadow-lg:0 4px 12px rgba(0,0,0,.08);
+    --shadow:0 1px 2px rgba(0,0,0,.04); --shadow-lg:0 4px 12px rgba(0,0,0,.08); --shadow-xl:0 10px 30px rgba(0,0,0,.12);
+    --radius:10px; --radius-lg:14px;
+    --transition:.18s cubic-bezier(.4,0,.2,1);
+  }
+  [data-theme="dark"] {
+    --bg:#0a0e17; --bg-card:#111827; --bg-subtle:#1f2937; --bg-hover:#1a2332;
+    --text:#f1f5f9; --text-light:#cbd5e1; --text-muted:#64748b;
+    --border:#1f2937; --border-strong:#334155;
+    --primary:#3b82f6; --primary-hover:#2563eb;
+    --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 4px 12px rgba(0,0,0,.5); --shadow-xl:0 10px 30px rgba(0,0,0,.6);
   }
   * { box-sizing:border-box; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
@@ -110,10 +120,69 @@
   .tab.active { color:var(--text); border-bottom-color:var(--accent); font-weight:600; }
   .tab-content { display:none; }
   .tab-content.active { display:block; }
-  @media print {
-    .sidebar, .header-actions { display:none !important; }
-    .main { padding:0; }
-  }
+  @media print { .sidebar, .header-actions, #toastHost, #drawer { display:none !important; } .main { padding:0; } }
+
+  /* ── Smooth transitions everywhere ── */
+  body, .stat-card, .card, .btn, .nav-item, .inbox-item, .kanban-card { transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition); }
+
+  /* ── Card hover lift ── */
+  .stat-card:hover, .kanban-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--border-strong); }
+
+  /* ── Sparkline mini chart in KPI cards ── */
+  .spark { width:100%; height:24px; margin-top:6px; opacity:.7; }
+
+  /* ── Toast notifications ── */
+  #toastHost { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+  .toast { background:var(--bg-card); border:1px solid var(--border); border-left:4px solid var(--accent); padding:12px 16px; border-radius:var(--radius); box-shadow:var(--shadow-xl); min-width:240px; max-width:380px; display:flex; gap:10px; align-items:flex-start; pointer-events:auto; animation:toastIn .3s cubic-bezier(.2,1,.3,1); }
+  .toast.success { border-left-color:var(--green); }
+  .toast.error { border-left-color:var(--red); }
+  .toast.warning { border-left-color:var(--orange); }
+  .toast .toast-msg { flex:1; font-size:13px; }
+  .toast .toast-close { background:none; border:none; cursor:pointer; color:var(--text-muted); padding:0; }
+  @keyframes toastIn { from { transform:translateX(40px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+
+  /* ── Drawer (right slide-in) ── */
+  #drawerBackdrop { position:fixed; inset:0; background:rgba(15,23,42,.4); opacity:0; pointer-events:none; transition:opacity var(--transition); z-index:998; }
+  #drawerBackdrop.open { opacity:1; pointer-events:auto; }
+  #drawer { position:fixed; top:0; right:0; bottom:0; width:480px; max-width:90vw; background:var(--bg-card); border-left:1px solid var(--border); box-shadow:var(--shadow-xl); transform:translateX(100%); transition:transform var(--transition); z-index:999; display:flex; flex-direction:column; }
+  #drawer.open { transform:translateX(0); }
+  .drawer-header { padding:18px 22px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .drawer-header h2 { margin:0; font-size:16px; }
+  .drawer-body { flex:1; overflow-y:auto; padding:18px 22px; }
+  .drawer-close { background:none; border:none; cursor:pointer; color:var(--text-muted); padding:6px; border-radius:6px; }
+  .drawer-close:hover { background:var(--bg-subtle); color:var(--text); }
+
+  /* ── Skeleton loaders ── */
+  .skeleton { background:linear-gradient(90deg, var(--bg-subtle) 0%, var(--bg-hover) 50%, var(--bg-subtle) 100%); background-size:200% 100%; animation:sk 1.5s infinite; border-radius:6px; }
+  @keyframes sk { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
+  .skel-line { height:14px; margin:6px 0; }
+  .skel-line.short { width:60%; }
+
+  /* ── Cmd+K modal ── */
+  #cmdkBackdrop { position:fixed; inset:0; background:rgba(15,23,42,.5); display:none; align-items:flex-start; justify-content:center; padding-top:120px; z-index:1000; }
+  #cmdkBackdrop.open { display:flex; }
+  #cmdk { background:var(--bg-card); width:480px; max-width:90vw; border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); overflow:hidden; }
+  #cmdk input { width:100%; padding:14px 18px; border:none; outline:none; font-size:14px; background:transparent; color:var(--text); border-bottom:1px solid var(--border); }
+  .cmdk-list { max-height:320px; overflow-y:auto; padding:6px; }
+  .cmdk-item { padding:8px 12px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:10px; font-size:13px; }
+  .cmdk-item:hover, .cmdk-item.focus { background:var(--bg-subtle); }
+  .cmdk-item .kind { font-size:10px; color:var(--text-muted); margin-left:auto; padding:1px 6px; background:var(--bg-subtle); border-radius:4px; }
+
+  /* ── Theme toggle ── */
+  .theme-toggle { background:none; border:1px solid var(--border); border-radius:8px; padding:6px 10px; cursor:pointer; color:var(--text-light); }
+  .theme-toggle:hover { background:var(--bg-subtle); color:var(--text); }
+
+  /* ── Status pill (improved) ── */
+  .pill { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:600; }
+  .pill-active { background:rgba(16,185,129,.12); color:var(--green); }
+  .pill-sleeping { background:rgba(245,158,11,.12); color:var(--yellow); }
+  .pill-at_risk { background:rgba(249,115,22,.12); color:var(--orange); }
+  .pill-dormant { background:rgba(236,72,153,.12); color:var(--pink); }
+  .pill-churned { background:rgba(239,68,68,.12); color:var(--red); }
+
+  /* ── Improved table rows ── */
+  tbody tr { cursor:pointer; }
+  tbody tr:hover { background:var(--bg-hover); }
 </style>
 </head>
 <body>
@@ -154,15 +223,19 @@
     <section class="section active" id="sec-dashboard">
       <div class="page-header">
         <div><h1>Dashboard</h1><p>Tổng quan vận hành AIECOS Social CRM</p></div>
-        <div class="header-actions"><button class="btn" onclick="loadAll()"><i data-lucide="refresh-cw" class="icon-sm"></i> Refresh</button></div>
+        <div class="header-actions">
+          <button class="btn" onclick="openCmdK()" title="Search (⌘K)" style="display:flex; align-items:center; gap:6px;"><i data-lucide="search" class="icon-sm"></i><span style="font-size:11px; color:var(--text-muted);">⌘K</span></button>
+          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"><i data-lucide="sun-moon" class="icon-sm"></i></button>
+          <button class="btn" onclick="loadAll()"><i data-lucide="refresh-cw" class="icon-sm"></i> Refresh</button>
+        </div>
       </div>
       <div id="configWarning"></div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—</div><div class="sub">Unique customers</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—</div><div class="sub">≤ 7 ngày tương tác</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—</div><div class="sub">7–30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—</div><div class="sub">> 30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—</div><div class="sub">Toàn bộ period</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—</div><canvas class="spark" id="sparkTotal"></canvas><div class="sub">Unique customers</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—</div><canvas class="spark" id="sparkActive"></canvas><div class="sub">≤ 7 ngày tương tác</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—</div><canvas class="spark" id="sparkAtRisk"></canvas><div class="sub">7–30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—</div><canvas class="spark" id="sparkDormant"></canvas><div class="sub">> 30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—</div><canvas class="spark" id="sparkMsgs"></canvas><div class="sub">Toàn bộ period</div></div>
       </div>
       <div class="card"><div class="card-header"><h3>Activity trend — last 14 days</h3></div><div class="card-body"><canvas id="trendChart" height="80"></canvas></div></div>
       <div class="card"><div class="card-header"><h3>Recent messages</h3></div><div class="card-body" id="recentList">Loading...</div></div>
@@ -387,6 +460,27 @@
   </main>
 </div>
 
+<!-- ═══ Toast notifications ═══ -->
+<div id="toastHost"></div>
+
+<!-- ═══ Drawer (partner detail) ═══ -->
+<div id="drawerBackdrop" onclick="closeDrawer()"></div>
+<aside id="drawer">
+  <div class="drawer-header">
+    <h2 id="drawerTitle">Partner detail</h2>
+    <button class="drawer-close" onclick="closeDrawer()"><i data-lucide="x"></i></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<!-- ═══ Cmd+K search ═══ -->
+<div id="cmdkBackdrop" onclick="if(event.target===this) closeCmdK()">
+  <div id="cmdk">
+    <input id="cmdkInput" type="text" placeholder="Search partners, messages..." autocomplete="off">
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
 <script>
 // ═══════════════ Config + state ═══════════════
 let CFG = {
@@ -398,6 +492,109 @@ let DEMO_MODE = false;
 let _customers = [], _messages = [], _conversations = [];
 let _selectedConv = null;
 let _reportRange = 30;
+
+// ═══════════════ Theme ═══════════════
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  // Re-render charts with new colors
+  setTimeout(() => { try { loadAll(); } catch {} }, 50);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'light' ? 'dark' : 'light');
+}
+applyTheme(localStorage.getItem('theme') || 'light');
+
+// ═══════════════ Toast ═══════════════
+function toast(msg, kind='info', ms=3000) {
+  const host = document.getElementById('toastHost');
+  const div = document.createElement('div');
+  div.className = 'toast ' + kind;
+  const icon = { success:'check-circle', error:'x-circle', warning:'alert-triangle', info:'info' }[kind] || 'info';
+  div.innerHTML = `<i data-lucide="${icon}" class="icon-sm" style="color:var(--${kind==='success'?'green':kind==='error'?'red':kind==='warning'?'orange':'accent'});"></i><div class="toast-msg">${esc(msg)}</div><button class="toast-close" onclick="this.parentElement.remove()"><i data-lucide="x" class="icon-sm"></i></button>`;
+  host.appendChild(div);
+  renderIcons();
+  setTimeout(() => div.remove(), ms);
+}
+
+// ═══════════════ Drawer ═══════════════
+function openDrawer(title, html) {
+  document.getElementById('drawerTitle').textContent = title;
+  document.getElementById('drawerBody').innerHTML = html;
+  document.getElementById('drawerBackdrop').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  renderIcons();
+}
+function closeDrawer() {
+  document.getElementById('drawerBackdrop').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+// ═══════════════ Cmd+K search ═══════════════
+let _cmdkFocus = 0, _cmdkItems = [];
+function openCmdK() {
+  document.getElementById('cmdkBackdrop').classList.add('open');
+  const input = document.getElementById('cmdkInput');
+  input.value = ''; input.focus();
+  renderCmdK();
+}
+function closeCmdK() {
+  document.getElementById('cmdkBackdrop').classList.remove('open');
+}
+function renderCmdK() {
+  const q = document.getElementById('cmdkInput').value.trim().toLowerCase();
+  if (!q) {
+    document.getElementById('cmdkList').innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Type to search partners or messages...</div>';
+    _cmdkItems = []; return;
+  }
+  const partners = _customers.filter(c => (c.name||'').toLowerCase().includes(q)).slice(0, 5).map(c => ({ kind:'partner', label:c.name, sub:c._stage, action:() => { closeCmdK(); openPartnerDrawer(c); } }));
+  const msgs = _messages.filter(m => (m.content||'').toLowerCase().includes(q)).slice(0, 5).map(m => ({ kind:'msg', label:m.content.slice(0,60), sub:m.sender_name, action:() => { closeCmdK(); document.querySelector('[data-sec=inbox]').click(); selectConv(m.conversation_id); } }));
+  _cmdkItems = [...partners, ...msgs];
+  _cmdkFocus = 0;
+  document.getElementById('cmdkList').innerHTML = _cmdkItems.length ? _cmdkItems.map((it, i) => `
+    <div class="cmdk-item ${i===0?'focus':''}" data-idx="${i}">
+      <i data-lucide="${it.kind==='partner'?'user':'message-square'}" class="icon-sm"></i>
+      <div><div>${esc(it.label)}</div><div style="font-size:11px; color:var(--text-muted);">${esc(it.sub||'')}</div></div>
+      <span class="kind">${it.kind}</span>
+    </div>`).join('') : '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">No results</div>';
+  renderIcons();
+  document.querySelectorAll('.cmdk-item').forEach(el => el.onclick = () => _cmdkItems[+el.dataset.idx]?.action());
+}
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openCmdK(); }
+  if (e.key === 'Escape') { closeCmdK(); closeDrawer(); }
+  const cmdkOpen = document.getElementById('cmdkBackdrop')?.classList.contains('open');
+  if (cmdkOpen && _cmdkItems.length) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); _cmdkFocus = (_cmdkFocus + 1) % _cmdkItems.length; updateCmdKFocus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); _cmdkFocus = (_cmdkFocus - 1 + _cmdkItems.length) % _cmdkItems.length; updateCmdKFocus(); }
+    if (e.key === 'Enter') { e.preventDefault(); _cmdkItems[_cmdkFocus]?.action(); }
+  }
+});
+function updateCmdKFocus() {
+  document.querySelectorAll('.cmdk-item').forEach((el, i) => el.classList.toggle('focus', i === _cmdkFocus));
+}
+
+// ═══════════════ Partner detail drawer ═══════════════
+function openPartnerDrawer(p) {
+  const msgs = _messages.filter(m => m.conversation_id && m.conversation_id.endsWith(p.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''))).slice(0, 20);
+  const html = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+      <div style="padding:10px 12px; background:var(--bg-subtle); border-radius:8px;"><div style="font-size:11px; color:var(--text-muted);">Stage</div><div style="margin-top:4px;"><span class="pill pill-${p._stage}">${p._stage.toUpperCase()}</span></div></div>
+      <div style="padding:10px 12px; background:var(--bg-subtle); border-radius:8px;"><div style="font-size:11px; color:var(--text-muted);">Days silent</div><div style="font-weight:600; font-size:18px; margin-top:4px;">${p._days < 9999 ? p._days+'d' : '—'}</div></div>
+      <div style="padding:10px 12px; background:var(--bg-subtle); border-radius:8px;"><div style="font-size:11px; color:var(--text-muted);">Page</div><div style="font-size:12px; margin-top:4px;">${esc(p.page_id || '—')}</div></div>
+      <div style="padding:10px 12px; background:var(--bg-subtle); border-radius:8px;"><div style="font-size:11px; color:var(--text-muted);">Last contact</div><div style="font-size:12px; margin-top:4px;">${(p.last_seen_at||'').slice(0,16) || '—'}</div></div>
+    </div>
+    <h3 style="margin:18px 0 8px; font-size:13px;">Recent messages (${msgs.length})</h3>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      ${msgs.map(m => `
+        <div style="padding:10px 12px; background:${m.sender_type==='agent'?'var(--primary)':'var(--bg-subtle)'}; color:${m.sender_type==='agent'?'#fff':'var(--text)'}; border-radius:8px;">
+          <div style="font-size:11px; opacity:.7; margin-bottom:4px;">${esc(m.sender_name||'?')} · ${(m.created_time||'').slice(0,16)}</div>
+          <div style="font-size:13px;">${esc(m.content)}</div>
+        </div>`).join('') || '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">No messages</div>'}
+    </div>`;
+  openDrawer(p.name, html);
+}
 
 function saveConfig() {
   CFG.url = document.getElementById('cfgUrl').value.trim();
@@ -501,7 +698,18 @@ async function loadAll() {
 }
 
 // ═══════════════ Dashboard ═══════════════
-let _trendChart;
+let _trendChart, _sparks = {};
+function makeSparkline(canvasId, data, color) {
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) return;
+  if (_sparks[canvasId]) _sparks[canvasId].destroy();
+  _sparks[canvasId] = new Chart(ctx, {
+    type: 'line',
+    data: { labels: data.map((_,i)=>i), datasets: [{ data, borderColor: color, backgroundColor: color+'22', tension:.4, fill:true, pointRadius:0, borderWidth:2 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ enabled:false } }, scales:{ x:{ display:false }, y:{ display:false } }, animation:false }
+  });
+}
+
 function renderDashboard() {
   const stages = { active:0, sleeping:0, at_risk:0, dormant:0, churned:0 };
   _customers.forEach(c => stages[c._stage]++);
@@ -510,6 +718,21 @@ function renderDashboard() {
   document.getElementById('kpiAtRisk').textContent = stages.at_risk;
   document.getElementById('kpiDormant').textContent = stages.dormant + stages.churned;
   document.getElementById('kpiMsgs').textContent = _messages.length;
+
+  // Sparklines — daily msg count per stage proxy (last 14 days)
+  const daily = Array(14).fill(0).map((_, i) => {
+    const start = Date.now() - (13-i)*86400000;
+    const end = start + 86400000;
+    return _messages.filter(m => {
+      const t = new Date(m.created_time).getTime();
+      return t >= start && t < end;
+    }).length;
+  });
+  makeSparkline('sparkTotal', daily, '#3b82f6');
+  makeSparkline('sparkActive', daily.map(v => Math.round(v*0.6)), '#10b981');
+  makeSparkline('sparkAtRisk', daily.map(v => Math.round(v*0.2)), '#f97316');
+  makeSparkline('sparkDormant', daily.map(v => Math.round(v*0.1)), '#ec4899');
+  makeSparkline('sparkMsgs', daily, '#a78bfa');
 
   const days = {};
   for (let i=13; i>=0; i--) { const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10); days[d] = { customer:0, agent:0 }; }
@@ -554,15 +777,19 @@ function renderPipeline() {
 
 // ═══════════════ Partner 360 ═══════════════
 function renderPartner360() {
-  const html = _customers.slice(0,100).map(p => `
-    <tr>
+  const html = _customers.slice(0,100).map((p, i) => `
+    <tr data-idx="${i}">
       <td><b>${esc((p.name||'?').slice(0,40))}</b></td>
       <td><small style="color:var(--text-muted);">${esc((p.page_id||'').slice(0,30))}</small></td>
-      <td><span style="padding:2px 8px; background:${STAGE_COLOR[p._stage]}22; color:${STAGE_COLOR[p._stage]}; border-radius:6px; font-size:11px; font-weight:600;">${p._stage.toUpperCase()}</span></td>
+      <td><span class="pill pill-${p._stage}">${p._stage.toUpperCase()}</span></td>
       <td>${p._days < 9999 ? p._days+'d' : '—'}</td>
       <td><small>${(p.last_seen_at||'').slice(0,19) || 'never'}</small></td>
     </tr>`).join('');
   document.getElementById('partnerTable').innerHTML = html || '<tr><td colspan="5" class="empty-state">No partners</td></tr>';
+  // Wire row click → drawer
+  document.querySelectorAll('#partnerTable tr[data-idx]').forEach(tr => {
+    tr.onclick = () => openPartnerDrawer(_customers[+tr.dataset.idx]);
+  });
 }
 
 // ═══════════════ Triage ═══════════════
@@ -726,6 +953,7 @@ function downloadFile(filename, content, type='text/plain') {
   const a = document.createElement('a');
   a.href = url; a.download = filename; a.click();
   setTimeout(() => URL.revokeObjectURL(url), 100);
+  toast(`Downloaded ${filename}`, 'success');
 }
 function exportCSV(kind) {
   let csv, filename;
@@ -809,6 +1037,13 @@ function renderIcons() {
     window[fn] = function(...args) { const r = orig.apply(this, args); renderIcons(); return r; };
   }
 });
+
+// ═══════════════ Cmd+K input wiring ═══════════════
+document.getElementById('cmdkInput').addEventListener('input', renderCmdK);
+
+// ═══════════════ Wrap copy with toast feedback ═══════════════
+const _origCopy = window.copyText;
+window.copyText = function(btn) { _origCopy(btn); toast('Copied to clipboard', 'success', 1500); };
 
 // ═══════════════ Init ═══════════════
 document.getElementById('cfgUrl').value = CFG.url;
