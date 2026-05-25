@@ -1,6 +1,14 @@
 # AIECOS Social CRM
 
+[![CI](https://github.com/aiecosvietnam/aiecos-social-crm/actions/workflows/ci.yml/badge.svg)](https://github.com/aiecosvietnam/aiecos-social-crm/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub Pages](https://img.shields.io/badge/demo-live-blue?logo=github)](https://aiecosvietnam.github.io/aiecos-social-crm/)
+
 Open-source template to sync Pancake (Zalo OA / Facebook Messenger / Instagram) data into your own Supabase, with a built-in admin UI, MCP server for AI agents, and B2B partner classification.
+
+**🌐 [Live demo](https://aiecosvietnam.github.io/aiecos-social-crm/)** · **📖 [Setup guide](SETUP.md)** · **🤖 [MCP usage](docs/MCP_USAGE.md)**
+
+---
 
 **What it does:**
 - 📥 Chrome extension reads Pancake DOM → POST to your sync receiver
@@ -28,6 +36,27 @@ Open-source template to sync Pancake (Zalo OA / Facebook Messenger / Instagram) 
                                    │ (HTML/JS)    │         │ (for Claude) │
                                    └──────────────┘         └──────────────┘
 ```
+
+---
+
+## Screenshots
+
+**Admin UI — Dashboard** (live data from your own Supabase):
+- 📊 KPI cards: Total partners / Active / At-Risk / Dormant+Churned / Total messages
+- 📈 14-day activity trend (Customer vs Agent split)
+- 💬 Recent messages stream
+
+**Pipeline Kanban** — 5 stages with auto-classification:
+```
+┌─────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+│ ACTIVE  │  │ SLEEPING │  │ AT-RISK │  │ DORMANT │  │ CHURNED │
+│  ≤ 3d   │  │  3-7d    │  │ 7-30d   │  │ 30-90d  │  │  >90d   │
+└─────────┘  └──────────┘  └─────────┘  └─────────┘  └─────────┘
+```
+
+**Triage** — Auto-alerts for partners going silent · **Partner 360** — Full table · **Performance** — Customer/Agent ratio + top partners
+
+→ **[Try the live demo](https://aiecosvietnam.github.io/aiecos-social-crm/)** (connect to your Supabase via Settings)
 
 ---
 
