@@ -322,24 +322,24 @@
       </div>
     </div>
 
-    <div id="demoBadge" class="demo-badge" style="display:none;"><i data-lucide="flask-conical"></i>DEMO MODE — Sample data</div>
+    <div id="demoBadge" class="demo-badge" style="display:none;"><i data-lucide="flask-conical"></i>CHẾ ĐỘ DEMO — Sample data</div>
 
     <div class="nav-group">Workspace</div>
-    <div class="nav-item active" data-sec="dashboard"><i data-lucide="layout-dashboard"></i>Dashboard</div>
+    <div class="nav-item active" data-sec="dashboard"><i data-lucide="layout-dashboard"></i>Bảng điều khiển</div>
     <div class="nav-item" data-sec="triage"><i data-lucide="zap"></i>Cần chăm sóc</div>
-    <div class="nav-item" data-sec="inbox"><i data-lucide="message-circle"></i>Inbox</div>
+    <div class="nav-item" data-sec="inbox"><i data-lucide="message-circle"></i>Hộp thư</div>
     <div class="nav-item" data-sec="pipeline"><i data-lucide="target"></i>Pipeline</div>
 
-    <div class="nav-group">Customers</div>
-    <div class="nav-item" data-sec="partner360"><i data-lucide="users"></i>Partner 360</div>
+    <div class="nav-group">Khách hàng</div>
+    <div class="nav-item" data-sec="partner360"><i data-lucide="users"></i>Đối tác 360</div>
 
-    <div class="nav-group">Analytics</div>
-    <div class="nav-item" data-sec="performance"><i data-lucide="trending-up"></i>Performance</div>
-    <div class="nav-item" data-sec="reports"><i data-lucide="file-text"></i>Reports</div>
+    <div class="nav-group">Phân tích</div>
+    <div class="nav-item" data-sec="performance"><i data-lucide="trending-up"></i>Hiệu suất</div>
+    <div class="nav-item" data-sec="reports"><i data-lucide="file-text"></i>Báo cáo</div>
 
-    <div class="nav-group">System</div>
-    <div class="nav-item" data-sec="help"><i data-lucide="book-open"></i>Help & MCP</div>
-    <div class="nav-item" data-sec="settings"><i data-lucide="settings"></i>Settings</div>
+    <div class="nav-group">Hệ thống</div>
+    <div class="nav-item" data-sec="help"><i data-lucide="book-open"></i>Hướng dẫn & MCP</div>
+    <div class="nav-item" data-sec="settings"><i data-lucide="settings"></i>Cài đặt</div>
   </aside>
 
   <main class="main">
@@ -347,82 +347,82 @@
     <!-- ═══ DASHBOARD ═══ -->
     <section class="section active" id="sec-dashboard">
       <div class="page-header">
-        <div><h1>Dashboard</h1><p>Tổng quan vận hành AIECOS Social CRM</p></div>
+        <div><h1>Bảng điều khiển</h1><p>Tổng quan vận hành AIECOS Social CRM</p></div>
         <div class="header-actions">
           <button class="btn sidebar-toggle" onclick="toggleSidebar()" title="Menu" aria-label="Toggle sidebar"><i data-lucide="menu" class="icon-sm"></i></button>
-          <button class="btn" onclick="openCmdK()" title="Search (⌘K)" style="display:flex; align-items:center; gap:6px;" aria-label="Search"><i data-lucide="search" class="icon-sm"></i><span style="font-size:11px; color:var(--text-muted);">⌘K</span></button>
-          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme"><i data-lucide="sun-moon" class="icon-sm"></i></button>
-          <button class="btn" onclick="loadAll()" aria-label="Refresh data"><i data-lucide="refresh-cw" class="icon-sm"></i> Refresh</button>
+          <button class="btn" onclick="openCmdK()" title="Tìm kiếm (⌘K)" style="display:flex; align-items:center; gap:6px;" aria-label="Tìm kiếm"><i data-lucide="search" class="icon-sm"></i><span style="font-size:11px; color:var(--text-muted);">⌘K</span></button>
+          <button class="theme-toggle" onclick="toggleTheme()" title="Đổi giao diện" aria-label="Đổi giao diện"><i data-lucide="sun-moon" class="icon-sm"></i></button>
+          <button class="btn" onclick="loadAll()" aria-label="Làm mới"><i data-lucide="refresh-cw" class="icon-sm"></i> Làm mới</button>
         </div>
       </div>
       <div id="configWarning"></div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—<span class="delta flat" id="dTotal">—</span></div><div class="spark-wrap"><canvas id="sparkTotal"></canvas></div><div class="sub">Unique customers</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—<span class="delta flat" id="dActive">—</span></div><div class="spark-wrap"><canvas id="sparkActive"></canvas></div><div class="sub">≤ 7 ngày tương tác</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—<span class="delta flat" id="dAtRisk">—</span></div><div class="spark-wrap"><canvas id="sparkAtRisk"></canvas></div><div class="sub">7–30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—<span class="delta flat" id="dDormant">—</span></div><div class="spark-wrap"><canvas id="sparkDormant"></canvas></div><div class="sub">> 30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—<span class="delta flat" id="dMsgs">—</span></div><div class="spark-wrap"><canvas id="sparkMsgs"></canvas></div><div class="sub">Trong 30 ngày</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Tổng đối tác</div><div class="value" id="kpiTotal">—<span class="delta flat" id="dTotal">—</span></div><div class="spark-wrap"><canvas id="sparkTotal"></canvas></div><div class="sub">Khách duy nhất</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Đang hoạt động</div><div class="value" id="kpiActive" style="color:var(--green);">—<span class="delta flat" id="dActive">—</span></div><div class="spark-wrap"><canvas id="sparkActive"></canvas></div><div class="sub">≤ 7 ngày tương tác</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>Cần chú ý</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—<span class="delta flat" id="dAtRisk">—</span></div><div class="spark-wrap"><canvas id="sparkAtRisk"></canvas></div><div class="sub">7–30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Ngưng tương tác</div><div class="value" id="kpiDormant" style="color:var(--pink);">—<span class="delta flat" id="dDormant">—</span></div><div class="spark-wrap"><canvas id="sparkDormant"></canvas></div><div class="sub">> 30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Tổng tin nhắn</div><div class="value" id="kpiMsgs">—<span class="delta flat" id="dMsgs">—</span></div><div class="spark-wrap"><canvas id="sparkMsgs"></canvas></div><div class="sub">Trong 30 ngày</div></div>
       </div>
 
-      <!-- Multi-panel chart row (Rocky style) -->
+      <!-- Multi-panel chart row -->
       <div class="grid-3">
-        <div class="card" style="margin:0;"><div class="card-header"><h3>Activity trend — last 14 days</h3></div><div class="card-body" style="height:240px;"><canvas id="trendChart"></canvas></div></div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3>Customer vs Agent</h3></div><div class="card-body" style="height:240px; display:flex; align-items:center; justify-content:center;"><canvas id="ratioChart"></canvas></div></div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3>By channel</h3></div><div class="card-body" style="height:240px;"><canvas id="channelChart"></canvas></div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Xu hướng tin nhắn — 14 ngày qua</h3></div><div class="card-body" style="height:240px;"><canvas id="trendChart"></canvas></div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Khách vs Nhân viên</h3></div><div class="card-body" style="height:240px; display:flex; align-items:center; justify-content:center;"><canvas id="ratioChart"></canvas></div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Theo kênh</h3></div><div class="card-body" style="height:240px;"><canvas id="channelChart"></canvas></div></div>
       </div>
 
       <!-- Stage distribution + Hourly heatmap row -->
       <div class="grid-2">
-        <div class="card" style="margin:0;"><div class="card-header"><h3>Partner stage distribution</h3></div><div class="card-body" id="stageDistDash">Loading...</div></div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3>Hourly activity heatmap</h3></div><div class="card-body" id="dashHeatmap" style="overflow-x:auto;">Loading...</div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Phân bố trạng thái đối tác</h3></div><div class="card-body" id="stageDistDash">Đang tải...</div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Bản đồ hoạt động theo giờ</h3></div><div class="card-body" id="dashHeatmap" style="overflow-x:auto;">Đang tải...</div></div>
       </div>
 
       <!-- Inbox health + Response time row -->
       <div class="grid-3">
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="inbox" class="icon-sm" style="color:var(--orange);"></i>Inbox health</h3></div>
-          <div class="card-body" id="inboxHealth">Loading...</div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="inbox" class="icon-sm" style="color:var(--orange);"></i>Sức khỏe Hộp thư</h3></div>
+          <div class="card-body" id="inboxHealth">Đang tải...</div>
         </div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="timer" class="icon-sm" style="color:var(--accent);"></i>Response time</h3></div>
-          <div class="card-body" id="responseTime">Loading...</div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="timer" class="icon-sm" style="color:var(--accent);"></i>Thời gian phản hồi</h3></div>
+          <div class="card-body" id="responseTime">Đang tải...</div>
         </div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="user-plus" class="icon-sm" style="color:var(--green);"></i>New partners (14d)</h3></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="user-plus" class="icon-sm" style="color:var(--green);"></i>Đối tác mới (14 ngày)</h3></div>
           <div class="card-body" style="height:140px; padding:18px;"><canvas id="newPartnersChart"></canvas></div>
         </div>
       </div>
 
       <!-- Peak hours + Reply rate + Sentiment row -->
       <div class="grid-3">
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alarm-clock" class="icon-sm" style="color:var(--purple);"></i>Top hours</h3></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alarm-clock" class="icon-sm" style="color:var(--purple);"></i>Giờ cao điểm</h3></div>
           <div class="card-body" style="height:140px; padding:18px;"><canvas id="topHoursChart"></canvas></div>
         </div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="percent" class="icon-sm" style="color:var(--pink);"></i>Reply rate per channel</h3></div>
-          <div class="card-body" id="replyRateBox">Loading...</div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="percent" class="icon-sm" style="color:var(--pink);"></i>Tỉ lệ phản hồi theo kênh</h3></div>
+          <div class="card-body" id="replyRateBox">Đang tải...</div>
         </div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="smile" class="icon-sm" style="color:var(--green);"></i>Sentiment signals</h3></div>
-          <div class="card-body" id="sentimentBox">Loading...</div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="smile" class="icon-sm" style="color:var(--green);"></i>Tín hiệu cảm xúc</h3></div>
+          <div class="card-body" id="sentimentBox">Đang tải...</div>
         </div>
       </div>
 
       <!-- Top partners + Recent activity row -->
       <div class="grid-2">
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="trending-up" class="icon-sm" style="color:var(--accent);"></i>Top 5 partners (this week)</h3></div><div class="card-body" id="dashTopPartners">Loading...</div></div>
-        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="activity" class="icon-sm" style="color:var(--green);"></i>Recent activity</h3></div><div class="card-body" id="recentList" style="max-height:380px; overflow-y:auto;">Loading...</div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="trending-up" class="icon-sm" style="color:var(--accent);"></i>Top 5 đối tác (tuần này)</h3></div><div class="card-body" id="dashTopPartners">Đang tải...</div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="activity" class="icon-sm" style="color:var(--green);"></i>Hoạt động gần đây</h3></div><div class="card-body" id="recentList" style="max-height:380px; overflow-y:auto;">Đang tải...</div></div>
       </div>
     </section>
 
     <!-- ═══ TRIAGE ═══ -->
     <section class="section" id="sec-triage">
       <div class="page-header"><div><h1>Đối tác cần chăm sóc</h1><p>Auto-alert partners chuyển At-Risk hoặc Dormant</p></div></div>
-      <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alert-triangle" style="color:var(--orange);"></i>KHẨN — At-Risk (cần outreach 1-3 ngày)</h3></div><div class="card-body" id="triageUrgent">Loading...</div></div>
-      <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="moon" style="color:var(--pink);"></i>CẦN REVIVAL — Dormant + Churned</h3></div><div class="card-body" id="triagePending">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alert-triangle" style="color:var(--orange);"></i>KHẨN — At-Risk (cần liên hệ trong 1-3 ngày)</h3></div><div class="card-body" id="triageUrgent">Đang tải...</div></div>
+      <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="moon" style="color:var(--pink);"></i>CẦN GỌI LẠI — Dormant + Churned</h3></div><div class="card-body" id="triagePending">Đang tải...</div></div>
     </section>
 
     <!-- ═══ INBOX (Rocky 3-pane) ═══ -->
     <section class="section" id="sec-inbox">
-      <div class="page-header"><div><h1>Inbox</h1><p>3-pane view: Pages · Conversations · Messages + Customer info</p></div></div>
+      <div class="page-header"><div><h1>Inbox</h1><p>3 cột: Trang · Hội thoại · Tin nhắn + Thông tin khách</p></div></div>
 
       <div class="channel-row">
-        <button class="channel-chip active" onclick="setInboxChannel('all', this)"><i data-lucide="globe" class="icon-sm"></i>All channels</button>
+        <button class="channel-chip active" onclick="setInboxChannel('all', this)"><i data-lucide="globe" class="icon-sm"></i>Tất cả kênh</button>
         <button class="channel-chip" onclick="setInboxChannel('facebook', this)"><i data-lucide="facebook" class="icon-sm"></i>Facebook</button>
         <button class="channel-chip" onclick="setInboxChannel('zalo_oa', this)"><i data-lucide="message-square" class="icon-sm"></i>Zalo</button>
         <button class="channel-chip" onclick="setInboxChannel('instagram', this)"><i data-lucide="instagram" class="icon-sm"></i>Instagram</button>
@@ -431,23 +431,23 @@
       <div class="inbox3">
         <!-- Left: Pages -->
         <div class="inbox-pane">
-          <div class="inbox-pane-header"><i data-lucide="bookmark" class="icon-sm"></i>Pages</div>
-          <div class="inbox-pane-body" id="inboxPages">Loading...</div>
+          <div class="inbox-pane-header"><i data-lucide="bookmark" class="icon-sm"></i>Trang</div>
+          <div class="inbox-pane-body" id="inboxPages">Đang tải...</div>
         </div>
         <!-- Middle: Conversations -->
         <div class="inbox-pane">
-          <div class="inbox-pane-header"><i data-lucide="messages-square" class="icon-sm"></i>Conversations</div>
-          <div class="inbox-search"><input id="inboxSearch" type="text" placeholder="Search by name or content..." oninput="renderInbox()"></div>
-          <div class="inbox-pane-body" id="inboxList">Loading...</div>
+          <div class="inbox-pane-header"><i data-lucide="messages-square" class="icon-sm"></i>Hội thoại</div>
+          <div class="inbox-search"><input id="inboxSearch" type="text" placeholder="Tìm theo tên hoặc nội dung..." oninput="renderInbox()"></div>
+          <div class="inbox-pane-body" id="inboxList">Đang tải...</div>
         </div>
         <!-- Right: Messages + Customer info (split via tabs) -->
         <div class="inbox-pane">
           <div class="inbox-pane-header" id="inboxDetailHeader">
-            <span style="color:var(--text-muted); text-transform:none; font-weight:normal; font-size:13px;">Select a conversation to view messages</span>
+            <span style="color:var(--text-muted); text-transform:none; font-weight:normal; font-size:13px;">Chọn 1 hội thoại để xem tin nhắn</span>
           </div>
           <div class="tabs" style="margin:0; padding:0 14px;">
-            <div class="tab active" onclick="switchInboxTab('msgs', this)"><i data-lucide="message-circle" class="icon-sm"></i>Messages</div>
-            <div class="tab" onclick="switchInboxTab('info', this)"><i data-lucide="user" class="icon-sm"></i>Customer info</div>
+            <div class="tab active" onclick="switchInboxTab('msgs', this)"><i data-lucide="message-circle" class="icon-sm"></i>Tin nhắn</div>
+            <div class="tab" onclick="switchInboxTab('info', this)"><i data-lucide="user" class="icon-sm"></i>Thông tin khách</div>
           </div>
           <div class="inbox-pane-body">
             <div id="inboxTabMsgs" class="msg-thread"></div>
@@ -460,9 +460,9 @@
     <!-- ═══ PIPELINE ═══ -->
     <section class="section" id="sec-pipeline">
       <div class="page-header">
-        <div><h1>Pipeline</h1><p>Tình trạng đối tác — phân nhóm theo mức độ hoạt động (last contact)</p></div>
+        <div><h1>Pipeline</h1><p>Phân nhóm đối tác theo mức độ hoạt động (last contact)</p></div>
         <div class="header-actions">
-          <input id="pipelineSearch" type="text" placeholder="Search partners..." oninput="renderPipeline()" style="padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg-card); color:var(--text); font-family:inherit; width:200px;">
+          <input id="pipelineSearch" type="text" placeholder="Tìm đối tác..." oninput="renderPipeline()" style="padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg-card); color:var(--text); font-family:inherit; width:200px;">
         </div>
       </div>
       <div class="channel-row" id="pipelineChannelChips" style="border:none; padding:0 0 14px 0;"></div>
@@ -472,9 +472,9 @@
     <!-- ═══ PARTNER 360 ═══ -->
     <section class="section" id="sec-partner360">
       <div class="page-header">
-        <div><h1>Partner 360</h1><p>Quản lý đối tác B2B — full activity timeline · click row để xem chi tiết</p></div>
+        <div><h1>Partner 360</h1><p>Quản lý đối tác B2B — click 1 dòng để xem chi tiết</p></div>
         <div class="header-actions">
-          <input id="partnerSearch" type="text" placeholder="Search partners..." oninput="renderPartner360()" style="padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg-card); color:var(--text); font-family:inherit; width:200px;">
+          <input id="partnerSearch" type="text" placeholder="Tìm đối tác..." oninput="renderPartner360()" style="padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg-card); color:var(--text); font-family:inherit; width:200px;">
           <button class="btn" onclick="exportCSV('partners')" style="display:flex;align-items:center;gap:6px;"><i data-lucide="download" class="icon-sm"></i>CSV</button>
         </div>
       </div>
@@ -488,56 +488,86 @@
       </div>
       <div class="card"><div class="card-body" style="padding:0;">
         <table><thead><tr><th>Partner</th><th>Page</th><th>Stage</th><th>Days silent</th><th>Last seen</th><th></th></tr></thead>
-        <tbody id="partnerTable"><tr><td colspan="6">Loading...</td></tr></tbody></table>
+        <tbody id="partnerTable"><tr><td colspan="6">Đang tải...</td></tr></tbody></table>
       </div></div>
     </section>
 
-    <!-- ═══ PERFORMANCE ═══ -->
+    <!-- ═══ PERFORMANCE (Rocky 3-col pattern) ═══ -->
     <section class="section" id="sec-performance">
-      <div class="page-header"><div><h1>Performance</h1><p>Phân tích vận hành — tin nhắn, hoạt động partner</p></div></div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="label-row">Total messages</div><div class="value" id="perfMsgs">—</div></div>
-        <div class="stat-card"><div class="label-row">Customer msgs</div><div class="value" id="perfCust">—</div></div>
-        <div class="stat-card"><div class="label-row">Agent msgs</div><div class="value" id="perfAgent">—</div></div>
-        <div class="stat-card"><div class="label-row">Reply rate</div><div class="value" id="perfRate">—</div></div>
+      <div class="page-header">
+        <div><h1>Phân tích hiệu suất</h1><p>Phân tích chuyên sâu — tin nhắn, hoạt động partner, channel mix</p></div>
+        <div class="header-actions">
+          <div class="filter-segs">
+            <button onclick="setPerfRange(7,this)">7 ngày</button>
+            <button class="active" onclick="setPerfRange(30,this)">30 ngày</button>
+            <button onclick="setPerfRange(90,this)">90 ngày</button>
+          </div>
+        </div>
       </div>
-      <div class="card"><div class="card-header"><h3>Customer vs Agent — last 14 days</h3></div><div class="card-body"><canvas id="perfTrend" height="80"></canvas></div></div>
-      <div class="card"><div class="card-header"><h3>Hourly activity heatmap (last 30 days)</h3></div><div class="card-body" id="perfHeatmap">Loading...</div></div>
-      <div class="card"><div class="card-header"><h3>Top partners by message volume</h3></div><div class="card-body" id="topPartners">Loading...</div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Tổng tin nhắn</div><div class="value" id="perfMsgs">—</div><div class="sub">Trong khoảng thời gian</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Đối tác active</div><div class="value" id="perfActive" style="color:var(--green);">—</div><div class="sub">≤ 7 ngày tương tác</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>Đối tác im</div><div class="value" id="perfSleeping" style="color:var(--orange);">—</div><div class="sub">At-Risk + Dormant</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Tỉ lệ phản hồi</div><div class="value" id="perfRate" style="color:var(--pink);">—</div><div class="sub">Agent / Tổng tin</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Avg tin/đối tác</div><div class="value" id="perfAvgMsg">—</div><div class="sub">Trong khoảng</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--yellow);"></span>Avg im (ngày)</div><div class="value" id="perfAvgSilence">—</div><div class="sub">Trung bình/đối tác</div></div>
+      </div>
+
+      <div class="card"><div class="card-header"><h3>Tin nhắn theo ngày — Khách vs Nhân viên</h3></div><div class="card-body" style="height:280px;"><canvas id="perfTrend"></canvas></div></div>
+
+      <div class="grid-2">
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Tỉ lệ Khách vs Nhân viên</h3></div><div class="card-body" style="height:260px; display:flex; align-items:center; justify-content:center;"><canvas id="perfRatio"></canvas></div></div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3>Top đối tác theo số tin</h3></div><div class="card-body" id="topPartners">Đang tải...</div></div>
+      </div>
+
+      <div class="card"><div class="card-header"><h3>Bản đồ hoạt động theo giờ (30 ngày qua)</h3></div><div class="card-body" id="perfHeatmap" style="overflow-x:auto;">Đang tải...</div></div>
+
+      <!-- 3-col bottom (Rocky style) -->
+      <div class="grid-3">
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alarm-clock" class="icon-sm" style="color:var(--purple);"></i>Phân bố theo giờ</h3></div>
+          <div class="card-body" style="height:200px; padding:18px;"><canvas id="perfHourBar"></canvas></div>
+        </div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="users" class="icon-sm" style="color:var(--accent);"></i>Top sender (theo tên)</h3></div>
+          <div class="card-body" id="perfTopSenders">Đang tải...</div>
+        </div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="calendar" class="icon-sm" style="color:var(--green);"></i>Phân bố theo ngày trong tuần</h3></div>
+          <div class="card-body" style="height:200px; padding:18px;"><canvas id="perfDayOfWeek"></canvas></div>
+        </div>
+      </div>
     </section>
 
     <!-- ═══ REPORTS (NEW) ═══ -->
     <section class="section" id="sec-reports">
       <div class="page-header">
-        <div><h1>Reports</h1><p>Xuất báo cáo + CSV từ data tin nhắn</p></div>
+        <div><h1>Báo cáo</h1><p>Xuất báo cáo + CSV từ data tin nhắn</p></div>
         <div class="header-actions">
           <div class="filter-segs">
-            <button onclick="setReportRange(7,this)">7d</button>
-            <button class="active" onclick="setReportRange(30,this)">30d</button>
-            <button onclick="setReportRange(90,this)">90d</button>
+            <button onclick="setReportRange(7,this)">7 ngày</button>
+            <button class="active" onclick="setReportRange(30,this)">30 ngày</button>
+            <button onclick="setReportRange(90,this)">90 ngày</button>
           </div>
         </div>
       </div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="label-row">Period</div><div class="value" id="rptPeriod" style="font-size:18px;">last 30d</div></div>
-        <div class="stat-card"><div class="label-row">Messages in period</div><div class="value" id="rptMsgs">—</div></div>
-        <div class="stat-card"><div class="label-row">Active partners</div><div class="value" id="rptActive">—</div></div>
-        <div class="stat-card"><div class="label-row">Need attention</div><div class="value" id="rptNeed" style="color:var(--orange);">—</div></div>
+        <div class="stat-card"><div class="label-row">Khoảng thời gian</div><div class="value" id="rptPeriod" style="font-size:18px;">last 30d</div></div>
+        <div class="stat-card"><div class="label-row">Tin nhắn trong khoảng</div><div class="value" id="rptMsgs">—</div></div>
+        <div class="stat-card"><div class="label-row">Đối tác active</div><div class="value" id="rptActive">—</div></div>
+        <div class="stat-card"><div class="label-row">Cần chú ý</div><div class="value" id="rptNeed" style="color:var(--orange);">—</div></div>
       </div>
-      <div class="card"><div class="card-header"><h3>Export options</h3></div><div class="card-body">
+      <div class="card"><div class="card-header"><h3>Tuỳ chọn xuất</h3></div><div class="card-body">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-          <button class="btn btn-primary" onclick="exportCSV('partners')" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="download" class="icon-sm"></i> Export Partners (CSV)</button>
-          <button class="btn btn-primary" onclick="exportCSV('messages')" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="download" class="icon-sm"></i> Export Messages (CSV)</button>
-          <button class="btn" onclick="exportHTMLReport()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="file-text" class="icon-sm"></i> Generate HTML Report (printable)</button>
-          <button class="btn" onclick="exportJSON()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="braces" class="icon-sm"></i> Export raw JSON</button>
+          <button class="btn btn-primary" onclick="exportCSV('partners')" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="download" class="icon-sm"></i> Xuất Đối tác (CSV)</button>
+          <button class="btn btn-primary" onclick="exportCSV('messages')" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="download" class="icon-sm"></i> Xuất Tin nhắn (CSV)</button>
+          <button class="btn" onclick="exportHTMLReport()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="file-text" class="icon-sm"></i> Xuất báo cáo HTML (in được)</button>
+          <button class="btn" onclick="exportJSON()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="braces" class="icon-sm"></i> Xuất JSON gốc</button>
         </div>
       </div></div>
-      <div class="card"><div class="card-header"><h3>Report preview</h3></div><div class="card-body" id="reportPreview">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3>Xem trước báo cáo</h3></div><div class="card-body" id="reportPreview">Đang tải...</div></div>
     </section>
 
     <!-- ═══ HELP & MCP (NEW) ═══ -->
     <section class="section" id="sec-help">
-      <div class="page-header"><div><h1>Help & MCP setup</h1><p>Quick start + hướng dẫn kết nối MCP cho Claude</p></div></div>
+      <div class="page-header"><div><h1>Hướng dẫn & MCP setup</h1><p>Bắt đầu nhanh + hướng dẫn kết nối MCP cho Claude</p></div></div>
       <div class="tabs">
         <div class="tab active" onclick="switchTab('tab-quickstart', this)"><i data-lucide="rocket" class="icon-sm"></i> Quick start</div>
         <div class="tab" onclick="switchTab('tab-mcp', this)"><i data-lucide="bot" class="icon-sm"></i> MCP setup</div>
@@ -651,7 +681,7 @@
 
     <!-- ═══ SETTINGS ═══ -->
     <section class="section" id="sec-settings">
-      <div class="page-header"><div><h1>Settings</h1><p>Cấu hình kết nối Supabase</p></div></div>
+      <div class="page-header"><div><h1>Cài đặt</h1><p>Cấu hình kết nối Supabase</p></div></div>
       <div class="card"><div class="card-body">
         <div style="display:grid; grid-template-columns:160px 1fr; gap:12px 16px; align-items:center;">
           <label>Supabase URL</label>
@@ -662,8 +692,8 @@
           <input id="cfgSchema" type="text" value="aiecos_social" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px;">
           <div></div>
           <div style="display:flex; gap:8px;">
-            <button class="btn btn-primary" onclick="saveConfig()">Save + reload</button>
-            <button class="btn" onclick="clearConfig()">Clear + use demo</button>
+            <button class="btn btn-primary" onclick="saveConfig()">Lưu + Tải lại</button>
+            <button class="btn" onclick="clearConfig()">Xoá + Dùng demo</button>
           </div>
         </div>
         <p style="margin-top:16px; font-size:12px; color:var(--text-muted);">
@@ -816,7 +846,7 @@ function openPartnerDrawer(p) {
         <div style="padding:10px 12px; background:${m.sender_type==='agent'?'var(--primary)':'var(--bg-subtle)'}; color:${m.sender_type==='agent'?'#fff':'var(--text)'}; border-radius:8px;">
           <div style="font-size:11px; opacity:.7; margin-bottom:4px;">${esc(m.sender_name||'?')} · ${(m.created_time||'').slice(0,16)}</div>
           <div style="font-size:13px;">${esc(m.content)}</div>
-        </div>`).join('') || '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">No messages</div>'}
+        </div>`).join('') || '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">Không có tin nhắn</div>'}
     </div>`;
   openDrawer(p.name, html);
 }
@@ -1126,7 +1156,7 @@ function renderDashboard() {
       <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>${esc((c.name||'').slice(0,28))}</span><span style="font-weight:600;">${c.rate.toFixed(0)}%</span></div>
       <div class="progress" style="width:100%;"><span style="width:${c.rate}%; background:var(--pink);"></span></div>
       <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${c.cust} customer · ${c.ag} agent msgs</div>
-    </div>`).join('') || '<div class="empty-state">No data</div>';
+    </div>`).join('') || '<div class="empty-state">Không có dữ liệu</div>';
 
   // ── Sentiment signals (lightweight keyword detection) ──
   const POS = /cảm ơn|tốt|ok|được|tuyệt|hay|thanks|good|great/i;
@@ -1354,7 +1384,7 @@ function renderInbox() {
 
   convs.sort((a,b) => new Date(b._latest.created_time).getTime() - new Date(a._latest.created_time).getTime());
 
-  document.getElementById('inboxList').innerHTML = convs.length === 0 ? '<div class="empty-state" style="padding:30px 20px;"><i data-lucide="inbox" style="opacity:.3;"></i><h3>No conversations</h3></div>' : convs.map(c => {
+  document.getElementById('inboxList').innerHTML = convs.length === 0 ? '<div class="empty-state" style="padding:30px 20px;"><i data-lucide="inbox" style="opacity:.3;"></i><h3>Không có hội thoại</h3></div>' : convs.map(c => {
     const cust = _customers.find(cu => c.id.endsWith((cu.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')));
     const stage = cust?._stage || 'active';
     const initial = (c.customer_name || c.id).charAt(0).toUpperCase();
@@ -1446,31 +1476,91 @@ function renderInboxDetail() {
 }
 
 // ═══════════════ Performance ═══════════════
-let _perfChart;
+let _perfChart, _perfRatioChart, _perfHourBarChart, _perfDOWChart, _perfRange = 30;
+function setPerfRange(days, btn) {
+  _perfRange = days;
+  document.querySelectorAll('#sec-performance .filter-segs button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPerformance();
+}
 function renderPerformance() {
-  const total = _messages.length;
-  const cust = _messages.filter(m => m.sender_type === 'customer').length;
-  const agent = _messages.filter(m => m.sender_type === 'agent').length;
-  document.getElementById('perfMsgs').textContent = total;
-  document.getElementById('perfCust').textContent = cust;
-  document.getElementById('perfAgent').textContent = agent;
-  document.getElementById('perfRate').textContent = total > 0 ? Math.round(agent/total*100)+'%' : '0%';
+  const since = Date.now() - _perfRange * 86400000;
+  const periodMsgs = _messages.filter(m => new Date(m.created_time).getTime() >= since);
+  const total = periodMsgs.length;
+  const cust = periodMsgs.filter(m => m.sender_type === 'customer').length;
+  const agent = periodMsgs.filter(m => m.sender_type === 'agent').length;
+  const activeP = _customers.filter(c => c._stage === 'active' || c._stage === 'sleeping').length;
+  const sleepingP = _customers.filter(c => c._stage === 'at_risk' || c._stage === 'dormant').length;
+  const totalP = _customers.length;
+  const avgMsgPerP = totalP > 0 ? (total / totalP).toFixed(1) : '0';
+  const validDays = _customers.filter(c => c._days < 9999).map(c => c._days);
+  const avgSilence = validDays.length > 0 ? (validDays.reduce((a,b) => a+b, 0) / validDays.length).toFixed(0) : '0';
 
-  // Trend
+  document.getElementById('perfMsgs').textContent = total;
+  document.getElementById('perfActive').textContent = activeP;
+  document.getElementById('perfSleeping').textContent = sleepingP;
+  document.getElementById('perfRate').textContent = total > 0 ? Math.round(agent/total*100)+'%' : '0%';
+  document.getElementById('perfAvgMsg').textContent = avgMsgPerP;
+  document.getElementById('perfAvgSilence').textContent = avgSilence + 'd';
+
+  // Trend (period-aware: 7/30/90 days)
+  const numDays = _perfRange;
   const days = {};
-  for (let i=13; i>=0; i--) { const d = new Date(Date.now()-i*86400000).toISOString().slice(0,10); days[d] = {customer:0, agent:0}; }
-  _messages.forEach(m => { const d = (m.created_time||'').slice(0,10); if (days[d]) { if (m.sender_type==='agent') days[d].agent++; else days[d].customer++; } });
+  for (let i=numDays-1; i>=0; i--) { const d = new Date(Date.now()-i*86400000).toISOString().slice(0,10); days[d] = {customer:0, agent:0}; }
+  periodMsgs.forEach(m => { const d = (m.created_time||'').slice(0,10); if (days[d]) { if (m.sender_type==='agent') days[d].agent++; else days[d].customer++; } });
   const labels = Object.keys(days);
   const ctx = document.getElementById('perfTrend').getContext('2d');
   if (_perfChart) _perfChart.destroy();
   _perfChart = new Chart(ctx, {
     type: 'bar',
     data: { labels: labels.map(d => d.slice(5)), datasets: [
-      { label:'Customer', data: labels.map(d => days[d].customer), backgroundColor:'#3b82f6' },
-      { label:'Agent', data: labels.map(d => days[d].agent), backgroundColor:'#10b981' },
+      { label:'Khách', data: labels.map(d => days[d].customer), backgroundColor:'#3b82f6' },
+      { label:'Nhân viên', data: labels.map(d => days[d].agent), backgroundColor:'#10b981' },
     ]},
     options: { responsive:true, maintainAspectRatio:false, scales:{ x:{stacked:true}, y:{stacked:true} } }
   });
+
+  // Ratio doughnut
+  if (_perfRatioChart) _perfRatioChart.destroy();
+  _perfRatioChart = new Chart(document.getElementById('perfRatio'), {
+    type:'doughnut',
+    data:{ labels:['Khách', 'Nhân viên'], datasets:[{ data:[cust, agent], backgroundColor:['#3b82f6', '#10b981'], borderWidth:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{ legend:{ position:'bottom' } } }
+  });
+
+  // Hour bar (24h distribution)
+  const hourBins = Array(24).fill(0);
+  periodMsgs.forEach(m => { try { hourBins[new Date(m.created_time).getHours()]++; } catch {} });
+  if (_perfHourBarChart) _perfHourBarChart.destroy();
+  _perfHourBarChart = new Chart(document.getElementById('perfHourBar'), {
+    type:'bar',
+    data:{ labels: hourBins.map((_,i) => i+'h'), datasets:[{ data: hourBins, backgroundColor:'#a78bfa', borderRadius:3 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ font:{ size:9 } } } } }
+  });
+
+  // Day of week
+  const dowNames = ['CN','T2','T3','T4','T5','T6','T7'];
+  const dow = Array(7).fill(0);
+  periodMsgs.forEach(m => { try { dow[new Date(m.created_time).getDay()]++; } catch {} });
+  if (_perfDOWChart) _perfDOWChart.destroy();
+  _perfDOWChart = new Chart(document.getElementById('perfDayOfWeek'), {
+    type:'bar',
+    data:{ labels: dowNames, datasets:[{ data: dow, backgroundColor: dow.map((_,i) => i===0 || i===6 ? '#f97316' : '#10b981'), borderRadius:6 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
+  });
+
+  // Top senders
+  const senderCount = {};
+  periodMsgs.forEach(m => { const k = (m.sender_name || '?').slice(0, 30); senderCount[k] = (senderCount[k] || 0) + 1; });
+  const topSenders = Object.entries(senderCount).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const maxS = topSenders[0]?.[1] || 1;
+  document.getElementById('perfTopSenders').innerHTML = topSenders.length === 0 ? '<div class="empty-state">Không có dữ liệu</div>' :
+    topSenders.map(([name, n]) => `
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+        <div style="flex:1; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(name)}</div>
+        <div class="progress" style="width:80px;"><span style="width:${n/maxS*100}%; background:var(--accent);"></span></div>
+        <div style="width:34px; text-align:right; font-weight:600; font-size:12px;">${n}</div>
+      </div>`).join('');
 
   // Heatmap 7 days × 24 hours
   const since30 = Date.now() - 30*86400000;
@@ -1512,7 +1602,7 @@ function renderPerformance() {
       <div style="flex:1; font-size:13px;">${esc(convMap[cid] || cid)}</div>
       <div class="progress"><span style="width:${n/max*100}%; background:var(--pink);"></span></div>
       <div style="width:40px; text-align:right; font-weight:600;">${n}</div>
-    </div>`).join('') || '<div class="empty-state">No data</div>';
+    </div>`).join('') || '<div class="empty-state">Không có dữ liệu</div>';
 }
 
 // ═══════════════ Reports (NEW) ═══════════════
@@ -1539,8 +1629,8 @@ function renderReports() {
   document.getElementById('reportPreview').innerHTML = `
     <h3 style="margin-top:0;">Summary report — last ${_reportRange} days</h3>
     <p><b>Total partners:</b> ${_customers.length}</p>
-    <p><b>Messages in period:</b> ${msgsInPeriod.length} (${msgsInPeriod.filter(m => m.sender_type==='customer').length} from customers, ${msgsInPeriod.filter(m => m.sender_type==='agent').length} from agents)</p>
-    <p><b>Active partners:</b> ${activeIds.size}</p>
+    <p><b>Tin nhắn trong khoảng:</b> ${msgsInPeriod.length} (${msgsInPeriod.filter(m => m.sender_type==='customer').length} from customers, ${msgsInPeriod.filter(m => m.sender_type==='agent').length} from agents)</p>
+    <p><b>Đối tác active:</b> ${activeIds.size}</p>
     <h4>Stage distribution</h4>
     <table style="width:100%;">
       ${Object.entries(stages).map(([k,v]) => `<tr><td><span style="color:${STAGE_COLOR[k]}; font-weight:600;">●</span> ${STAGE_LABEL[k]}</td><td>${v}</td><td>${_customers.length > 0 ? (v/_customers.length*100).toFixed(1) : 0}%</td></tr>`).join('')}
@@ -1604,7 +1694,7 @@ function exportHTMLReport() {
     <h2>Key metrics</h2>
     <div class="kpi-grid">
       <div class="kpi"><div class="label">Total partners</div><div class="value">${_customers.length}</div></div>
-      <div class="kpi"><div class="label">Messages in period</div><div class="value">${msgsInPeriod.length}</div></div>
+      <div class="kpi"><div class="label">Tin nhắn trong khoảng</div><div class="value">${msgsInPeriod.length}</div></div>
       <div class="kpi"><div class="label">From customers</div><div class="value">${cust}</div></div>
       <div class="kpi"><div class="label">From agents</div><div class="value">${agent}</div></div>
     </div>
