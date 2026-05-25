@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AIECOS Social CRM</title>
+<title>AIECOS Social CRM — Open-source Pancake → Supabase</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Open-source social CRM template — Pancake (Zalo/Facebook) → Supabase with admin UI + MCP server for AI agents. 5-stage B2B partner classification.">
+<meta name="theme-color" content="#0f172a">
+<meta property="og:title" content="AIECOS Social CRM">
+<meta property="og:description" content="Sync Pancake (Zalo OA / Facebook Messenger / Instagram) → Supabase. Built-in admin UI + MCP server.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://github.com/aiecosvietnam/aiecos-social-crm">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233b82f6'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Cpath d='M50 22 L60 42 L80 46 L65 60 L70 80 L50 70 L30 80 L35 60 L20 46 L40 42 Z' fill='white'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 <script src="demo-data.js"></script>
@@ -129,7 +136,8 @@
   .stat-card:hover, .kanban-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--border-strong); }
 
   /* ── Sparkline mini chart in KPI cards ── */
-  .spark { width:100%; height:24px; margin-top:6px; opacity:.7; }
+  .spark-wrap { position:relative; width:100%; height:32px; margin-top:8px; opacity:.7; }
+  .spark-wrap canvas { width:100% !important; height:100% !important; display:block; }
 
   /* ── Toast notifications ── */
   #toastHost { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
@@ -261,12 +269,51 @@
   .info-row:last-child { border-bottom:none; }
   .info-row .label { color:var(--text-muted); }
   .info-row .value { font-weight:600; }
+
+  /* ── Mobile sidebar toggle ── */
+  .sidebar-toggle { display:none; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position:fixed; top:0; left:0; bottom:0; width:240px; z-index:500; transform:translateX(-100%); transition:transform var(--transition); }
+    .sidebar.open { transform:translateX(0); box-shadow:var(--shadow-xl); }
+    .sidebar-toggle { display:inline-flex; }
+    .main { padding:16px 18px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .inbox3 { grid-template-columns: 1fr; height:auto; }
+    .kanban { grid-template-columns: repeat(2, 1fr); }
+    .header-actions { flex-wrap:wrap; }
+    .page-header { flex-direction:column; align-items:flex-start; gap:10px; }
+  }
+  @media (max-width: 560px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .kanban { grid-template-columns: 1fr; }
+    #drawer { width:100vw; }
+  }
+
+  /* ── Sidebar overlay (mobile) ── */
+  .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,.4); z-index:499; }
+  .sidebar-overlay.show { display:block; }
+
+  /* ── Loading skeleton helpers ── */
+  .skel-stat { padding:16px; }
+  .skel-stat .skel-line:nth-child(2) { width:50%; height:28px; margin-top:8px; }
+
+  /* ── Better empty state with icon ── */
+  .empty-state [data-lucide] { width:48px; height:48px; opacity:.3; margin-bottom:8px; }
+
+  /* ── Accessibility focus ring ── */
+  button:focus-visible, input:focus-visible, .nav-item:focus-visible, .conv-item:focus-visible, .page-item:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ── Print improvements ── */
+  @media print { .channel-row, .filter-segs, .header-actions { display:none !important; } .stat-card { break-inside:avoid; } }
 </style>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="ws">
       <div class="avatar"><i data-lucide="sparkles" style="color:#fff; width:18px; height:18px;"></i></div>
       <div class="info">
@@ -302,18 +349,19 @@
       <div class="page-header">
         <div><h1>Dashboard</h1><p>Tổng quan vận hành AIECOS Social CRM</p></div>
         <div class="header-actions">
-          <button class="btn" onclick="openCmdK()" title="Search (⌘K)" style="display:flex; align-items:center; gap:6px;"><i data-lucide="search" class="icon-sm"></i><span style="font-size:11px; color:var(--text-muted);">⌘K</span></button>
-          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"><i data-lucide="sun-moon" class="icon-sm"></i></button>
-          <button class="btn" onclick="loadAll()"><i data-lucide="refresh-cw" class="icon-sm"></i> Refresh</button>
+          <button class="btn sidebar-toggle" onclick="toggleSidebar()" title="Menu" aria-label="Toggle sidebar"><i data-lucide="menu" class="icon-sm"></i></button>
+          <button class="btn" onclick="openCmdK()" title="Search (⌘K)" style="display:flex; align-items:center; gap:6px;" aria-label="Search"><i data-lucide="search" class="icon-sm"></i><span style="font-size:11px; color:var(--text-muted);">⌘K</span></button>
+          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme"><i data-lucide="sun-moon" class="icon-sm"></i></button>
+          <button class="btn" onclick="loadAll()" aria-label="Refresh data"><i data-lucide="refresh-cw" class="icon-sm"></i> Refresh</button>
         </div>
       </div>
       <div id="configWarning"></div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—<span class="delta flat" id="dTotal">—</span></div><canvas class="spark" id="sparkTotal"></canvas><div class="sub">Unique customers</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—<span class="delta flat" id="dActive">—</span></div><canvas class="spark" id="sparkActive"></canvas><div class="sub">≤ 7 ngày tương tác</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—<span class="delta flat" id="dAtRisk">—</span></div><canvas class="spark" id="sparkAtRisk"></canvas><div class="sub">7–30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—<span class="delta flat" id="dDormant">—</span></div><canvas class="spark" id="sparkDormant"></canvas><div class="sub">> 30 ngày im</div></div>
-        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—<span class="delta flat" id="dMsgs">—</span></div><canvas class="spark" id="sparkMsgs"></canvas><div class="sub">Trong 30 ngày</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div><div class="value" id="kpiTotal">—<span class="delta flat" id="dTotal">—</span></div><div class="spark-wrap"><canvas id="sparkTotal"></canvas></div><div class="sub">Unique customers</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div><div class="value" id="kpiActive" style="color:var(--green);">—<span class="delta flat" id="dActive">—</span></div><div class="spark-wrap"><canvas id="sparkActive"></canvas></div><div class="sub">≤ 7 ngày tương tác</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div><div class="value" id="kpiAtRisk" style="color:var(--orange);">—<span class="delta flat" id="dAtRisk">—</span></div><div class="spark-wrap"><canvas id="sparkAtRisk"></canvas></div><div class="sub">7–30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div><div class="value" id="kpiDormant" style="color:var(--pink);">—<span class="delta flat" id="dDormant">—</span></div><div class="spark-wrap"><canvas id="sparkDormant"></canvas></div><div class="sub">> 30 ngày im</div></div>
+        <div class="stat-card"><div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div><div class="value" id="kpiMsgs">—<span class="delta flat" id="dMsgs">—</span></div><div class="spark-wrap"><canvas id="sparkMsgs"></canvas></div><div class="sub">Trong 30 ngày</div></div>
       </div>
 
       <!-- Multi-panel chart row (Rocky style) -->
@@ -614,6 +662,16 @@ let _customers = [], _messages = [], _conversations = [];
 let _selectedConv = null;
 let _reportRange = 30;
 
+// ═══════════════ Mobile sidebar ═══════════════
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
 // ═══════════════ Theme ═══════════════
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
@@ -748,6 +806,7 @@ document.querySelectorAll('.nav-item').forEach(el => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('sec-' + el.dataset.sec).classList.add('active');
+    closeSidebar(); // auto-close on mobile after nav
   };
 });
 function switchTab(tabId, btn) {

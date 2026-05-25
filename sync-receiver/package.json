@@ -1,12 +1,19 @@
 {
   "name": "aiecos-social-crm-sync",
-  "version": "1.5.0",
-  "description": "Sync receiver for AIECOS Social CRM (Pancake → Supabase)",
+  "version": "1.6.0",
+  "description": "Production sync receiver for AIECOS Social CRM (Pancake → Supabase)",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
   "license": "MIT",
+  "engines": { "node": ">=20" },
   "dependencies": {
     "express": "^4.19.2",
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.4.0",
+    "morgan": "^1.10.0"
   }
 }
