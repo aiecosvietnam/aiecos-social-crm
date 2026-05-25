@@ -5,6 +5,7 @@
 <title>AIECOS Social CRM</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 <script src="demo-data.js"></script>
 <style>
   :root {
@@ -24,7 +25,13 @@
   .ws .info { flex:1; }
   .ws .name { font-weight:600; font-size:13px; }
   .ws .sub { font-size:11px; color:var(--text-muted); }
-  .demo-badge { display:inline-block; padding:2px 6px; background:#fef3c7; color:#92400e; border-radius:4px; font-size:10px; font-weight:600; margin-bottom:12px; width:100%; text-align:center; }
+  .demo-badge { display:flex; gap:5px; align-items:center; justify-content:center; padding:5px 6px; background:#fef3c7; color:#92400e; border-radius:6px; font-size:11px; font-weight:600; margin-bottom:12px; width:100%; }
+  /* Lucide icon defaults */
+  [data-lucide] { width:16px; height:16px; stroke-width:2; vertical-align:middle; flex-shrink:0; }
+  .icon-sm { width:14px !important; height:14px !important; }
+  .icon-lg { width:20px !important; height:20px !important; }
+  .icon-xl { width:32px !important; height:32px !important; }
+  .nav-item [data-lucide] { color:inherit; }
   .nav-group { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; margin:14px 6px 6px; }
   .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--text-light); margin-bottom:2px; }
   .nav-item:hover { background:var(--bg-subtle); color:var(--text); }
@@ -114,31 +121,31 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="ws">
-      <div class="avatar">AI</div>
+      <div class="avatar"><i data-lucide="sparkles" style="color:#fff; width:18px; height:18px;"></i></div>
       <div class="info">
         <div class="name">AIECOS Demo</div>
         <div class="sub">Social CRM</div>
       </div>
     </div>
 
-    <div id="demoBadge" class="demo-badge" style="display:none;">🎭 DEMO MODE — Sample data</div>
+    <div id="demoBadge" class="demo-badge" style="display:none;"><i data-lucide="flask-conical"></i>DEMO MODE — Sample data</div>
 
     <div class="nav-group">Workspace</div>
-    <div class="nav-item active" data-sec="dashboard">📊 Dashboard</div>
-    <div class="nav-item" data-sec="triage">⚡ Cần chăm sóc</div>
-    <div class="nav-item" data-sec="inbox">💬 Inbox</div>
-    <div class="nav-item" data-sec="pipeline">🎯 Pipeline</div>
+    <div class="nav-item active" data-sec="dashboard"><i data-lucide="layout-dashboard"></i>Dashboard</div>
+    <div class="nav-item" data-sec="triage"><i data-lucide="zap"></i>Cần chăm sóc</div>
+    <div class="nav-item" data-sec="inbox"><i data-lucide="message-circle"></i>Inbox</div>
+    <div class="nav-item" data-sec="pipeline"><i data-lucide="target"></i>Pipeline</div>
 
     <div class="nav-group">Customers</div>
-    <div class="nav-item" data-sec="partner360">👥 Partner 360</div>
+    <div class="nav-item" data-sec="partner360"><i data-lucide="users"></i>Partner 360</div>
 
     <div class="nav-group">Analytics</div>
-    <div class="nav-item" data-sec="performance">📈 Performance</div>
-    <div class="nav-item" data-sec="reports">📄 Reports</div>
+    <div class="nav-item" data-sec="performance"><i data-lucide="trending-up"></i>Performance</div>
+    <div class="nav-item" data-sec="reports"><i data-lucide="file-text"></i>Reports</div>
 
     <div class="nav-group">System</div>
-    <div class="nav-item" data-sec="help">📖 Help & MCP</div>
-    <div class="nav-item" data-sec="settings">⚙ Settings</div>
+    <div class="nav-item" data-sec="help"><i data-lucide="book-open"></i>Help & MCP</div>
+    <div class="nav-item" data-sec="settings"><i data-lucide="settings"></i>Settings</div>
   </aside>
 
   <main class="main">
@@ -147,7 +154,7 @@
     <section class="section active" id="sec-dashboard">
       <div class="page-header">
         <div><h1>Dashboard</h1><p>Tổng quan vận hành AIECOS Social CRM</p></div>
-        <div class="header-actions"><button class="btn" onclick="loadAll()">↻ Refresh</button></div>
+        <div class="header-actions"><button class="btn" onclick="loadAll()"><i data-lucide="refresh-cw" class="icon-sm"></i> Refresh</button></div>
       </div>
       <div id="configWarning"></div>
       <div class="stats-grid">
@@ -164,8 +171,8 @@
     <!-- ═══ TRIAGE ═══ -->
     <section class="section" id="sec-triage">
       <div class="page-header"><div><h1>Đối tác cần chăm sóc</h1><p>Auto-alert partners chuyển At-Risk hoặc Dormant</p></div></div>
-      <div class="card"><div class="card-header"><h3>🚨 KHẨN — At-Risk (cần outreach 1-3 ngày)</h3></div><div class="card-body" id="triageUrgent">Loading...</div></div>
-      <div class="card"><div class="card-header"><h3>🌙 CẦN REVIVAL — Dormant + Churned</h3></div><div class="card-body" id="triagePending">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alert-triangle" style="color:var(--orange);"></i>KHẨN — At-Risk (cần outreach 1-3 ngày)</h3></div><div class="card-body" id="triageUrgent">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="moon" style="color:var(--pink);"></i>CẦN REVIVAL — Dormant + Churned</h3></div><div class="card-body" id="triagePending">Loading...</div></div>
     </section>
 
     <!-- ═══ INBOX (NEW) ═══ -->
@@ -231,10 +238,10 @@
       </div>
       <div class="card"><div class="card-header"><h3>Export options</h3></div><div class="card-body">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-          <button class="btn btn-primary" onclick="exportCSV('partners')">⬇ Export Partners (CSV)</button>
-          <button class="btn btn-primary" onclick="exportCSV('messages')">⬇ Export Messages (CSV)</button>
-          <button class="btn" onclick="exportHTMLReport()">📄 Generate HTML Report (printable)</button>
-          <button class="btn" onclick="exportJSON()">{ } Export raw JSON</button>
+          <button class="btn btn-primary" onclick="exportCSV('partners')" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="download" class="icon-sm"></i> Export Partners (CSV)</button>
+          <button class="btn btn-primary" onclick="exportCSV('messages')" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="download" class="icon-sm"></i> Export Messages (CSV)</button>
+          <button class="btn" onclick="exportHTMLReport()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="file-text" class="icon-sm"></i> Generate HTML Report (printable)</button>
+          <button class="btn" onclick="exportJSON()" style="display:flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="braces" class="icon-sm"></i> Export raw JSON</button>
         </div>
       </div></div>
       <div class="card"><div class="card-header"><h3>Report preview</h3></div><div class="card-body" id="reportPreview">Loading...</div></div>
@@ -244,10 +251,10 @@
     <section class="section" id="sec-help">
       <div class="page-header"><div><h1>Help & MCP setup</h1><p>Quick start + hướng dẫn kết nối MCP cho Claude</p></div></div>
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('tab-quickstart', this)">🚀 Quick start</div>
-        <div class="tab" onclick="switchTab('tab-mcp', this)">🤖 MCP setup</div>
-        <div class="tab" onclick="switchTab('tab-extension', this)">🧩 Chrome extension</div>
-        <div class="tab" onclick="switchTab('tab-api', this)">🔌 API reference</div>
+        <div class="tab active" onclick="switchTab('tab-quickstart', this)"><i data-lucide="rocket" class="icon-sm"></i> Quick start</div>
+        <div class="tab" onclick="switchTab('tab-mcp', this)"><i data-lucide="bot" class="icon-sm"></i> MCP setup</div>
+        <div class="tab" onclick="switchTab('tab-extension', this)"><i data-lucide="puzzle" class="icon-sm"></i> Chrome extension</div>
+        <div class="tab" onclick="switchTab('tab-api', this)"><i data-lucide="plug-zap" class="icon-sm"></i> API reference</div>
       </div>
 
       <div class="tab-content active" id="tab-quickstart">
@@ -457,13 +464,13 @@ async function loadAll() {
       document.getElementById('demoBadge').style.display = 'block';
       document.getElementById('configWarning').innerHTML = `
         <div class="config-info">
-          ℹ <b>Demo mode</b> — đang hiển thị sample data. Vào <a href="#" onclick="document.querySelector('[data-sec=settings]').click(); return false;"><b>Settings</b></a> để connect Supabase thật.
+          <i data-lucide="info" class="icon-sm" style="vertical-align:middle;"></i> <b>Demo mode</b> — đang hiển thị sample data. Vào <a href="#" onclick="document.querySelector('[data-sec=settings]').click(); return false;"><b>Settings</b></a> để connect Supabase thật.
         </div>`;
       _customers = window.DEMO_DATA.customers.map(c => ({ ...c, _days: daysSince(c.last_seen_at), _stage: stage(daysSince(c.last_seen_at)) }));
       _messages = window.DEMO_DATA.messages;
       _conversations = window.DEMO_DATA.conversations;
     } else {
-      document.getElementById('configWarning').innerHTML = `<div class="config-warning">⚠ Chưa cấu hình. Vào Settings.</div>`;
+      document.getElementById('configWarning').innerHTML = `<div class="config-warning"><i data-lucide="alert-triangle" class="icon-sm" style="vertical-align:middle;"></i> Chưa cấu hình. Vào Settings.</div>`;
       return;
     }
   } else {
@@ -789,10 +796,25 @@ function exportHTMLReport() {
   downloadFile(`AIECOS-report-${new Date().toISOString().slice(0,10)}.html`, html, 'text/html');
 }
 
+// ═══════════════ Icon helper — re-render Lucide after innerHTML changes ═══════════════
+function renderIcons() {
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
+// Patch all render functions to re-render icons after they update DOM
+['renderDashboard','renderTriage','renderInbox','renderPipeline','renderPartner360','renderPerformance','renderReports','renderInboxDetail'].forEach(fn => {
+  const orig = window[fn];
+  if (typeof orig === 'function') {
+    window[fn] = function(...args) { const r = orig.apply(this, args); renderIcons(); return r; };
+  }
+});
+
 // ═══════════════ Init ═══════════════
 document.getElementById('cfgUrl').value = CFG.url;
 document.getElementById('cfgKey').value = CFG.key;
 document.getElementById('cfgSchema').value = CFG.schema;
+renderIcons();    // Initial render of static icons (nav, badges)
 loadAll();
 </script>
 </body>
