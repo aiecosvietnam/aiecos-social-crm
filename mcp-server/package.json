@@ -1,0 +1,17 @@
+{
+  "name": "aiecos-social-crm-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for querying AIECOS Social CRM data (Supabase schema)",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "aiecos-social-crm-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

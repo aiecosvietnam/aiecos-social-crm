@@ -1,0 +1,189 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  # ─────────────────────────────────────────────
+  #  Lint + syntax check (fast, no install)
+  # ─────────────────────────────────────────────
+  syntax:
+    name: Syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+
+      - name: Validate all .js files (node --check)
+        run: |
+          set -e
+          for f in $(find . -name '*.js' -not -path './*/node_modules/*'); do
+            echo "→ $f"
+            node --check "$f"
+          done
+
+      - name: Validate all .json files
+        run: |
+          set -e
+          for f in $(find . -name '*.json' -not -path './*/node_modules/*' -not -path './*/package-lock.json'); do
+            echo "→ $f"
+            python3 -c "import json; json.load(open('$f'))"
+          done
+
+      - name: Validate manifest.json against Manifest V3 schema
+        run: |
+          python3 -c "
+          import json
+          m = json.load(open('chrome-extension/manifest.json'))
+          assert m['manifest_version'] == 3, 'Must be Manifest V3'
+          assert 'name' in m and 'version' in m
+          assert 'background' in m and 'service_worker' in m['background']
+          assert 'content_scripts' in m
+          print('✓ manifest.json valid Manifest V3')
+          "
+
+  # ─────────────────────────────────────────────
+  #  Install + smoke test (sync-receiver + mcp-server)
+  # ─────────────────────────────────────────────
+  install:
+    name: Install + smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+
+      - name: Install sync-receiver
+        working-directory: sync-receiver
+        run: npm install --no-audit --no-fund
+
+      - name: Sync receiver — boot check (fail fast on missing key)
+        working-directory: sync-receiver
+        run: |
+          set +e
+          timeout 3 node server.js
+          code=$?
+          if [ $code -eq 1 ]; then
+            echo "✓ Correctly exited (missing SUPABASE_SERVICE_KEY)"
+          else
+            echo "✗ Unexpected exit code: $code"
+            exit 1
+          fi
+
+      - name: Install mcp-server
+        working-directory: mcp-server
+        run: npm install --no-audit --no-fund
+
+      - name: MCP server — syntax + boot check
+        working-directory: mcp-server
+        env:
+          AIECOS_SUPABASE_KEY: dummy-key-for-syntax-check
+        run: |
+          # Boot for 2s then SIGINT — should not crash on init
+          set +e
+          timeout 2 node index.js > /tmp/mcp.log 2>&1
+          code=$?
+          # Exit code 124 = timeout (good — means it ran)
+          # Exit code 0 = clean exit
+          if [ $code -eq 124 ] || [ $code -eq 0 ]; then
+            echo "✓ MCP server boots cleanly"
+            cat /tmp/mcp.log
+          else
+            echo "✗ MCP server crashed (exit $code)"
+            cat /tmp/mcp.log
+            exit 1
+          fi
+
+  # ─────────────────────────────────────────────
+  #  Docker build
+  # ─────────────────────────────────────────────
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build sync-receiver image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./sync-receiver
+          push: false
+          tags: aiecos-sync-receiver:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Validate compose file
+        run: |
+          docker compose -f docker-compose.yml config > /dev/null
+          echo "✓ docker-compose.yml is valid"
+
+  # ─────────────────────────────────────────────
+  #  Secret leak detection
+  # ─────────────────────────────────────────────
+  secrets:
+    name: Secret leak scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for hardcoded JWT / API keys / passwords
+        run: |
+          set -e
+          FOUND=0
+
+          # JWT tokens (Supabase service keys)
+          if grep -rnE 'eyJhbGc[A-Za-z0-9_-]{60,}' . \
+              --include='*.js' --include='*.json' --include='*.md' \
+              --include='*.html' --include='*.sh' --include='*.sql' \
+              --include='*.yml' --include='*.yaml' \
+              --exclude-dir=node_modules --exclude-dir=.git; then
+            echo "✗ Hardcoded JWT detected"
+            FOUND=1
+          fi
+
+          # Plaintext passwords (avoid placeholders in .example files)
+          if grep -rnE '(password|secret)\s*[:=]\s*["\x27][^"\x27]{6,}["\x27]' . \
+              --include='*.js' --include='*.json' --include='*.html' \
+              --include='*.yml' --include='*.yaml' \
+              --exclude-dir=node_modules --exclude-dir=.git \
+              --exclude='*.example' \
+              | grep -viE 'placeholder|change.me|your.|dev.token|example'; then
+            echo "✗ Plaintext password detected"
+            FOUND=1
+          fi
+
+          if [ $FOUND -eq 1 ]; then
+            exit 1
+          fi
+          echo "✓ No leaked secrets"
+
+      - name: Verify no brand-specific identifiers
+        run: |
+          set -e
+          # Blocklist file approach so the scan doesn't match its own definition.
+          # Each line is a regex alternative; CI excludes .github/ from the scan.
+          BLOCKLIST_FILE=".github/blocklist.txt"
+          if [ ! -f "$BLOCKLIST_FILE" ]; then
+            echo "ℹ No blocklist file at $BLOCKLIST_FILE — skipping brand scan"
+            exit 0
+          fi
+          PATTERN=$(grep -vE '^\s*(#|$)' "$BLOCKLIST_FILE" | paste -sd '|' -)
+          if [ -z "$PATTERN" ]; then
+            echo "ℹ Blocklist empty — skipping brand scan"
+            exit 0
+          fi
+          if grep -rnE "$PATTERN" . \
+              --include='*.js' --include='*.json' --include='*.md' \
+              --include='*.html' --include='*.sh' --include='*.sql' \
+              --include='*.yml' --include='*.yaml' \
+              --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github; then
+            echo "✗ Found internal identifier listed in $BLOCKLIST_FILE — must be removed for public template"
+            exit 1
+          fi
+          echo "✓ Template is brand-neutral"

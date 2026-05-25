@@ -1,0 +1,79 @@
+# ═══════════════════════════════════════════════════════════════════
+#  AIECOS Social CRM — Dev stack (one-command boot)
+#
+#  Boots: Postgres + PostgREST + Sync Receiver + Static admin UI
+#  After `docker compose up -d`:
+#    - Sync receiver: http://localhost:3500
+#    - PostgREST:     http://localhost:3000
+#    - Postgres:      localhost:5432 (postgres/postgres)
+#    - Admin UI:      http://localhost:8080
+#
+#  For PRODUCTION: use real Supabase (cloud or self-host stack) and
+#  run only `sync-receiver` service here. See docs/DEPLOY.md.
+# ═══════════════════════════════════════════════════════════════════
+
+services:
+
+  # ── Postgres (dev only — use Supabase Postgres in prod) ──
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sync-receiver/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── PostgREST (REST API on top of Postgres) ──
+  postgrest:
+    image: postgrest/postgrest:v12.2.0
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/postgres
+      PGRST_DB_SCHEMAS: public,aiecos_social
+      PGRST_DB_ANON_ROLE: postgres        # dev only — use 'anon' in prod
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://localhost:3000
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  # ── Sync Receiver ──
+  sync-receiver:
+    build: ./sync-receiver
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 3500
+      # Strong shared secret between Chrome extension and this server
+      API_TOKEN: ${API_TOKEN:-dev-token-change-me-in-prod}
+      # Dev: point at local PostgREST. Prod: point at real Supabase.
+      SUPABASE_URL: ${SUPABASE_URL:-http://postgrest:3000}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-dev-no-auth}
+      SUPABASE_SCHEMA: ${SUPABASE_SCHEMA:-aiecos_social}
+    ports:
+      - "127.0.0.1:3500:3500"
+
+  # ── Admin UI (static HTML served via nginx) ──
+  admin-ui:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./admin-ui:/usr/share/nginx/html:ro
+    ports:
+      - "127.0.0.1:8080:80"
+
+volumes:
+  pg_data:

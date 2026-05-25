@@ -1,0 +1,15 @@
+# Internal identifiers that must NEVER appear in this public template.
+# Each line is a regex alternative. Blank lines + comments ignored.
+# CI's "Verify no brand-specific identifiers" job scans for these.
+
+# Internal product names
+rockylens
+rocky-studio
+rockyportal
+
+# Internal infrastructure
+10\.39\.93\.104
+
+# Internal credentials (Dify, API tokens, etc.)
+app-v9DYovPazwP4VrM9Tdy1C2Gx
+aiecosvietnam@gmail

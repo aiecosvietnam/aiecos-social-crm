@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "AIECOS Pancake Connector",
+  "version": "4.6.0",
+  "description": "Sync Pancake (Zalo/Facebook) data → AIECOS Social CRM. Pancake-specific selectors + msgID dedup.",
+  "permissions": ["storage", "activeTab", "scripting", "alarms", "tabs"],
+  "host_permissions": [
+    "http://localhost:*/*",
+    "https://*.pancake.vn/*",
+    "http://*.pancake.vn/*"
+  ],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [{
+    "matches": ["*://app.pancake.vn/*", "*://pancake.vn/*", "*://*.pancake.vn/*"],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }],
+  "action": { "default_popup": "popup.html", "default_icon": "icon.png" },
+  "icons": { "16": "icon.png", "48": "icon.png", "128": "icon.png" }
+}

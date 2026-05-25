@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AIECOS Social CRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#fafafa; --bg-card:#fff; --bg-subtle:#f3f4f6;
+    --text:#0f172a; --text-light:#475569; --text-muted:#94a3b8;
+    --border:#e5e7eb; --primary:#0f172a; --accent:#3b82f6;
+    --green:#10b981; --orange:#f97316; --pink:#ec4899; --purple:#a78bfa;
+    --red:#ef4444; --yellow:#f59e0b;
+    --shadow:0 1px 2px rgba(0,0,0,.04); --shadow-lg:0 4px 12px rgba(0,0,0,.08);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+  .layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+  .sidebar { background:#fff; border-right:1px solid var(--border); padding:18px 14px; }
+  .ws { display:flex; align-items:center; gap:10px; padding:10px; background:var(--bg-subtle); border-radius:10px; margin-bottom:18px; }
+  .ws .avatar { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#3b82f6,#a78bfa); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; }
+  .ws .info { flex:1; }
+  .ws .name { font-weight:600; font-size:13px; }
+  .ws .sub { font-size:11px; color:var(--text-muted); }
+  .nav-group { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; margin:14px 6px 6px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--text-light); margin-bottom:2px; }
+  .nav-item:hover { background:var(--bg-subtle); color:var(--text); }
+  .nav-item.active { background:var(--primary); color:#fff; }
+  .main { padding:24px 32px; overflow-y:auto; }
+  .page-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+  .page-header h1 { margin:0 0 4px; font-size:22px; }
+  .page-header p { margin:0; color:var(--text-muted); font-size:13px; }
+  .header-actions { display:flex; gap:8px; align-items:center; }
+  .btn { padding:7px 14px; border:1px solid var(--border); background:#fff; border-radius:8px; cursor:pointer; font-size:13px; }
+  .btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .filter-segs { display:flex; gap:4px; background:var(--bg-subtle); padding:3px; border-radius:8px; }
+  .filter-segs button { padding:5px 12px; border:none; background:transparent; border-radius:6px; font-size:12px; cursor:pointer; color:var(--text-light); }
+  .filter-segs button.active { background:#fff; color:var(--text); font-weight:600; box-shadow:var(--shadow); }
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:var(--shadow); }
+  .stat-card .label-row { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); margin-bottom:8px; }
+  .stat-card .dot { width:6px; height:6px; border-radius:50%; }
+  .stat-card .value { font-size:28px; font-weight:700; color:var(--text); }
+  .stat-card .sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .card-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .card-header h3 { margin:0; font-size:14px; font-weight:600; }
+  .card-body { padding:16px 18px; }
+  .empty-state { text-align:center; padding:40px 20px; color:var(--text-muted); }
+  .empty-state h3 { margin:8px 0 4px; font-size:14px; color:var(--text); }
+  .empty-state p { margin:0; font-size:12px; }
+  .kanban { display:grid; grid-template-columns:repeat(5, minmax(180px,1fr)); gap:12px; height:calc(100vh - 240px); overflow-x:auto; }
+  .kanban-col { background:var(--bg-subtle); border-radius:10px; display:flex; flex-direction:column; min-height:240px; }
+  .kanban-col-header { padding:12px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:6px; background:#fff; border-radius:10px 10px 0 0; }
+  .kanban-col-header .title { font-size:11px; font-weight:600; letter-spacing:.5px; }
+  .kanban-col-header .count { margin-left:auto; padding:1px 7px; background:var(--bg-subtle); border-radius:8px; font-size:10px; font-weight:600; }
+  .kanban-col-body { padding:10px; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; }
+  .kanban-card { background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:12px; }
+  .kanban-card .name { font-weight:600; margin-bottom:4px; }
+  .kanban-card .meta { color:var(--text-muted); font-size:10px; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:10px 14px; text-align:left; font-size:13px; border-bottom:1px solid var(--border); }
+  th { color:var(--text-muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+  .section { display:none; }
+  .section.active { display:block; }
+  .progress { width:100px; height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; }
+  .progress > span { display:block; height:100%; }
+  .config-warning { background:#fef3c7; border:1px solid #fbbf24; color:#92400e; padding:14px 18px; border-radius:10px; margin-bottom:20px; font-size:13px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="ws">
+      <div class="avatar">AI</div>
+      <div class="info">
+        <div class="name">AIECOS Demo</div>
+        <div class="sub">Social CRM</div>
+      </div>
+    </div>
+
+    <div class="nav-group">Workspace</div>
+    <div class="nav-item active" data-sec="dashboard">📊 Dashboard</div>
+    <div class="nav-item" data-sec="triage">⚡ Cần chăm sóc</div>
+    <div class="nav-item" data-sec="pipeline">🎯 Pipeline / Partners</div>
+
+    <div class="nav-group">Customers</div>
+    <div class="nav-item" data-sec="partner360">👥 Partner 360</div>
+
+    <div class="nav-group">Analytics</div>
+    <div class="nav-item" data-sec="performance">📈 Performance</div>
+
+    <div class="nav-group">System</div>
+    <div class="nav-item" data-sec="settings">⚙ Settings</div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <section class="section active" id="sec-dashboard">
+      <div class="page-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Tổng quan vận hành AIECOS Social CRM</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" onclick="loadAll()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div id="configWarning"></div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label-row"><span class="dot" style="background:var(--accent);"></span>Total partners</div>
+          <div class="value" id="kpiTotal">—</div>
+          <div class="sub">Unique customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="label-row"><span class="dot" style="background:var(--green);"></span>Active</div>
+          <div class="value" id="kpiActive" style="color:var(--green);">—</div>
+          <div class="sub">Tương tác ≤ 7 ngày</div>
+        </div>
+        <div class="stat-card">
+          <div class="label-row"><span class="dot" style="background:var(--orange);"></span>At-Risk</div>
+          <div class="value" id="kpiAtRisk" style="color:var(--orange);">—</div>
+          <div class="sub">7–30 ngày im</div>
+        </div>
+        <div class="stat-card">
+          <div class="label-row"><span class="dot" style="background:var(--pink);"></span>Dormant + Churned</div>
+          <div class="value" id="kpiDormant" style="color:var(--pink);">—</div>
+          <div class="sub">> 30 ngày im</div>
+        </div>
+        <div class="stat-card">
+          <div class="label-row"><span class="dot" style="background:var(--purple);"></span>Total messages</div>
+          <div class="value" id="kpiMsgs">—</div>
+          <div class="sub">Toàn bộ</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Activity trend — last 14 days</h3></div>
+        <div class="card-body"><canvas id="trendChart" height="80"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Recent messages</h3></div>
+        <div class="card-body" id="recentList">Loading...</div>
+      </div>
+    </section>
+
+    <!-- ═══ TRIAGE ═══ -->
+    <section class="section" id="sec-triage">
+      <div class="page-header">
+        <div>
+          <h1>Đối tác cần chăm sóc</h1>
+          <p>Auto-alert partners chuyển At-Risk hoặc Dormant</p>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h3>KHẨN — At-Risk (cần outreach 1-3 ngày)</h3></div>
+        <div class="card-body" id="triageUrgent">Loading...</div></div>
+      <div class="card"><div class="card-header"><h3>CẦN REVIVAL — Dormant + Churned</h3></div>
+        <div class="card-body" id="triagePending">Loading...</div></div>
+    </section>
+
+    <!-- ═══ PIPELINE ═══ -->
+    <section class="section" id="sec-pipeline">
+      <div class="page-header">
+        <div>
+          <h1>Pipeline</h1>
+          <p>Tình trạng đối tác — phân nhóm theo mức độ hoạt động</p>
+        </div>
+      </div>
+      <div class="kanban" id="kanban"></div>
+    </section>
+
+    <!-- ═══ PARTNER 360 ═══ -->
+    <section class="section" id="sec-partner360">
+      <div class="page-header">
+        <div>
+          <h1>Partner 360</h1>
+          <p>Quản lý đối tác B2B — chi tiết last contact + activity</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table><thead><tr><th>Partner</th><th>Page</th><th>Stage</th><th>Days silent</th><th>Last seen</th></tr></thead>
+          <tbody id="partnerTable"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PERFORMANCE ═══ -->
+    <section class="section" id="sec-performance">
+      <div class="page-header">
+        <div>
+          <h1>Performance</h1>
+          <p>Phân tích vận hành — tin nhắn, hoạt động partner</p>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="label-row">Total messages</div><div class="value" id="perfMsgs">—</div></div>
+        <div class="stat-card"><div class="label-row">Customer msgs</div><div class="value" id="perfCust">—</div></div>
+        <div class="stat-card"><div class="label-row">Agent msgs</div><div class="value" id="perfAgent">—</div></div>
+        <div class="stat-card"><div class="label-row">Reply rate</div><div class="value" id="perfRate">—</div></div>
+      </div>
+      <div class="card"><div class="card-header"><h3>Customer vs Agent — last 14 days</h3></div>
+        <div class="card-body"><canvas id="perfTrend" height="80"></canvas></div></div>
+      <div class="card"><div class="card-header"><h3>Top partners by volume</h3></div>
+        <div class="card-body" id="topPartners">Loading...</div></div>
+    </section>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <section class="section" id="sec-settings">
+      <div class="page-header">
+        <div>
+          <h1>Settings</h1>
+          <p>Cấu hình kết nối Supabase</p>
+        </div>
+      </div>
+      <div class="card"><div class="card-body">
+        <div style="display:grid; grid-template-columns:160px 1fr; gap:12px 16px; align-items:center;">
+          <label>Supabase URL</label>
+          <input id="cfgUrl" type="text" placeholder="https://your-project.supabase.co" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px;">
+          <label>Anon / Service key</label>
+          <input id="cfgKey" type="password" placeholder="eyJhbGc..." style="padding:8px 12px; border:1px solid var(--border); border-radius:8px;">
+          <label>Schema</label>
+          <input id="cfgSchema" type="text" value="aiecos_social" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px;">
+          <div></div>
+          <button class="btn btn-primary" onclick="saveConfig()">Save + reload</button>
+        </div>
+        <p style="margin-top:16px; font-size:12px; color:var(--text-muted);">
+          Config được lưu trong <code>localStorage</code>. Để dùng production, set environment variables trên server.
+        </p>
+      </div></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════ Config ═══════════════
+let CFG = {
+  url: localStorage.getItem('sb_url') || '',
+  key: localStorage.getItem('sb_key') || '',
+  schema: localStorage.getItem('sb_schema') || 'aiecos_social',
+};
+
+function saveConfig() {
+  CFG.url = document.getElementById('cfgUrl').value.trim();
+  CFG.key = document.getElementById('cfgKey').value.trim();
+  CFG.schema = document.getElementById('cfgSchema').value.trim() || 'aiecos_social';
+  localStorage.setItem('sb_url', CFG.url);
+  localStorage.setItem('sb_key', CFG.key);
+  localStorage.setItem('sb_schema', CFG.schema);
+  location.reload();
+}
+
+function hdrs() {
+  return { apikey: CFG.key, Authorization: 'Bearer ' + CFG.key, 'Accept-Profile': CFG.schema };
+}
+
+async function rest(path) {
+  if (!CFG.url || !CFG.key) throw new Error('Not configured');
+  const r = await fetch(`${CFG.url}/rest/v1/${path}`, { headers: hdrs() });
+  if (!r.ok) throw new Error(`REST ${r.status}`);
+  return r.json();
+}
+
+// ═══════════════ Navigation ═══════════════
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.onclick = () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('sec-' + el.dataset.sec).classList.add('active');
+    loadSection(el.dataset.sec);
+  };
+});
+
+// ═══════════════ Helpers ═══════════════
+function daysSince(iso) {
+  if (!iso) return 9999;
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+}
+
+function stage(d) {
+  if (d > 90) return 'churned';
+  if (d > 30) return 'dormant';
+  if (d > 7) return 'at_risk';
+  if (d >= 3) return 'sleeping';
+  return 'active';
+}
+
+const STAGE_COLOR = { active:'var(--green)', sleeping:'var(--yellow)', at_risk:'var(--orange)', dormant:'var(--pink)', churned:'var(--red)' };
+
+function esc(s) {
+  return String(s ?? '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'})[c]);
+}
+
+// ═══════════════ Data loaders ═══════════════
+let _customers = [], _messages = [], _conversations = [];
+
+async function loadAll() {
+  if (!CFG.url || !CFG.key) {
+    document.getElementById('configWarning').innerHTML = `
+      <div class="config-warning">
+        ⚠ <b>Chưa cấu hình Supabase</b> — vào <a href="#" onclick="document.querySelector('[data-sec=settings]').click(); return false;" style="color:#92400e; font-weight:600;">Settings</a> để nhập URL + key.
+      </div>`;
+    return;
+  }
+  document.getElementById('configWarning').innerHTML = '';
+
+  try {
+    const [cust, msgs, convs] = await Promise.all([
+      rest('customers?select=id,name,page_id,last_seen_at,first_seen_at&order=last_seen_at.desc.nullslast&limit=500'),
+      rest('messages?select=conversation_id,sender_type,sender_name,content,created_time&order=created_time.desc&limit=5000'),
+      rest('conversations?select=id,page_id,customer_name&limit=500'),
+    ]);
+    _customers = cust.map(c => ({ ...c, _days: daysSince(c.last_seen_at), _stage: stage(daysSince(c.last_seen_at)) }));
+    _messages = msgs;
+    _conversations = convs;
+    renderDashboard();
+    renderPipeline();
+    renderPartner360();
+    renderTriage();
+    renderPerformance();
+  } catch (e) {
+    document.getElementById('configWarning').innerHTML = `
+      <div class="config-warning">Lỗi tải data: ${esc(e.message)}</div>`;
+  }
+}
+
+function loadSection(name) { /* re-render only if needed; lazy */ }
+
+// ═══════════════ Dashboard ═══════════════
+let _trendChart;
+function renderDashboard() {
+  const stages = { active:0, sleeping:0, at_risk:0, dormant:0, churned:0 };
+  _customers.forEach(c => stages[c._stage]++);
+  document.getElementById('kpiTotal').textContent = _customers.length;
+  document.getElementById('kpiActive').textContent = stages.active + stages.sleeping;
+  document.getElementById('kpiAtRisk').textContent = stages.at_risk;
+  document.getElementById('kpiDormant').textContent = stages.dormant + stages.churned;
+  document.getElementById('kpiMsgs').textContent = _messages.length;
+
+  // Trend: msgs per day last 14d
+  const days = {};
+  for (let i=13; i>=0; i--) {
+    const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
+    days[d] = { customer:0, agent:0 };
+  }
+  _messages.forEach(m => {
+    const d = (m.created_time || '').slice(0,10);
+    if (days[d]) {
+      if (m.sender_type === 'agent') days[d].agent++;
+      else days[d].customer++;
+    }
+  });
+  const labels = Object.keys(days);
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (_trendChart) _trendChart.destroy();
+  _trendChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: labels.map(d => d.slice(5)),
+      datasets: [
+        { label:'Customer', data: labels.map(d => days[d].customer), borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.1)', tension:.3, fill:true },
+        { label:'Agent', data: labels.map(d => days[d].agent), borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.1)', tension:.3, fill:true },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } } }
+  });
+
+  // Recent msgs
+  const recent = _messages.slice(0, 10).map(m => `
+    <div style="padding:10px 0; border-bottom:1px solid var(--border); display:flex; gap:12px;">
+      <span style="font-size:11px; color:var(--text-muted); width:90px;">${(m.created_time||'').slice(0,19)}</span>
+      <span style="font-weight:600; width:120px; font-size:12px;">${esc((m.sender_name||'').slice(0,20))}</span>
+      <span style="flex:1; font-size:13px; color:var(--text);">${esc(m.content.slice(0,100))}</span>
+    </div>`).join('');
+  document.getElementById('recentList').innerHTML = recent || '<div class="empty-state">No messages yet</div>';
+}
+
+// ═══════════════ Pipeline (Kanban) ═══════════════
+function renderPipeline() {
+  const stages = ['active','sleeping','at_risk','dormant','churned'];
+  const labels = { active:'ACTIVE', sleeping:'SLEEPING', at_risk:'AT-RISK', dormant:'DORMANT', churned:'CHURNED' };
+  const grouped = Object.fromEntries(stages.map(s => [s, _customers.filter(c => c._stage === s)]));
+  document.getElementById('kanban').innerHTML = stages.map(s => `
+    <div class="kanban-col">
+      <div class="kanban-col-header">
+        <span class="dot" style="background:${STAGE_COLOR[s]}; width:8px; height:8px; border-radius:50%;"></span>
+        <span class="title">${labels[s]}</span>
+        <span class="count">${grouped[s].length}</span>
+      </div>
+      <div class="kanban-col-body">
+        ${grouped[s].slice(0, 30).map(p => `
+          <div class="kanban-card">
+            <div class="name">${esc((p.name||'').slice(0,30))}</div>
+            <div class="meta">${p._days} ngày im</div>
+          </div>
+        `).join('') || '<div style="text-align:center; padding:20px; font-size:11px; color:var(--text-muted);">No partners</div>'}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════ Partner 360 (table) ═══════════════
+function renderPartner360() {
+  const html = _customers.slice(0, 100).map(p => `
+    <tr>
+      <td><b>${esc((p.name||'?').slice(0,40))}</b></td>
+      <td><small style="color:var(--text-muted);">${esc((p.page_id||'').slice(0,30))}</small></td>
+      <td><span style="padding:2px 8px; background:${STAGE_COLOR[p._stage]}22; color:${STAGE_COLOR[p._stage]}; border-radius:6px; font-size:11px; font-weight:600;">${p._stage.toUpperCase()}</span></td>
+      <td>${p._days < 9999 ? p._days + 'd' : '—'}</td>
+      <td><small>${(p.last_seen_at||'').slice(0,19) || 'never'}</small></td>
+    </tr>`).join('');
+  document.getElementById('partnerTable').innerHTML = html || '<tr><td colspan="5" class="empty-state">No partners</td></tr>';
+}
+
+// ═══════════════ Triage ═══════════════
+function renderTriage() {
+  const urgent = _customers.filter(p => p._stage === 'at_risk' || p._stage === 'sleeping').sort((a,b) => a._days - b._days).slice(0, 10);
+  const revival = _customers.filter(p => p._stage === 'dormant' || p._stage === 'churned').sort((a,b) => a._days - b._days).slice(0, 12);
+
+  const renderCard = (p) => `
+    <div style="padding:12px 14px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-weight:600;">${esc(p.name||'?')}</div>
+        <div style="font-size:12px; color:var(--text-muted);">${p._days} ngày không tương tác · last contact: ${(p.last_seen_at||'').slice(0,10)}</div>
+      </div>
+      <span style="padding:2px 10px; background:${STAGE_COLOR[p._stage]}22; color:${STAGE_COLOR[p._stage]}; border-radius:6px; font-size:11px; font-weight:600;">${p._stage.toUpperCase()}</span>
+    </div>`;
+
+  document.getElementById('triageUrgent').innerHTML = urgent.length
+    ? urgent.map(renderCard).join('')
+    : '<div class="empty-state"><h3>Không có partner cần outreach gấp</h3><p>Tất cả partners đang Active</p></div>';
+  document.getElementById('triagePending').innerHTML = revival.length
+    ? revival.map(renderCard).join('')
+    : '<div class="empty-state"><h3>Không có partner Dormant / Churned</h3><p>Shop ngưng tương tác >30 ngày sẽ hiện ở đây</p></div>';
+}
+
+// ═══════════════ Performance ═══════════════
+let _perfChart;
+function renderPerformance() {
+  const total = _messages.length;
+  const cust = _messages.filter(m => m.sender_type === 'customer').length;
+  const agent = _messages.filter(m => m.sender_type === 'agent').length;
+  document.getElementById('perfMsgs').textContent = total;
+  document.getElementById('perfCust').textContent = cust;
+  document.getElementById('perfAgent').textContent = agent;
+  document.getElementById('perfRate').textContent = total > 0 ? Math.round(agent/total*100) + '%' : '0%';
+
+  const days = {};
+  for (let i=13; i>=0; i--) {
+    const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
+    days[d] = { customer:0, agent:0 };
+  }
+  _messages.forEach(m => {
+    const d = (m.created_time || '').slice(0,10);
+    if (days[d]) {
+      if (m.sender_type === 'agent') days[d].agent++;
+      else days[d].customer++;
+    }
+  });
+  const labels = Object.keys(days);
+  const ctx = document.getElementById('perfTrend').getContext('2d');
+  if (_perfChart) _perfChart.destroy();
+  _perfChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels.map(d => d.slice(5)),
+      datasets: [
+        { label:'Customer', data: labels.map(d => days[d].customer), backgroundColor:'#3b82f6' },
+        { label:'Agent', data: labels.map(d => days[d].agent), backgroundColor:'#10b981' },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, scales:{ x:{ stacked:true }, y:{ stacked:true } } }
+  });
+
+  // Top partners
+  const counts = {};
+  _messages.forEach(m => { counts[m.conversation_id] = (counts[m.conversation_id]||0) + 1; });
+  const convMap = Object.fromEntries(_conversations.map(c => [c.id, c.customer_name || c.id]));
+  const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,10);
+  const max = top[0]?.[1] || 1;
+  document.getElementById('topPartners').innerHTML = top.map(([cid,n]) => `
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+      <div style="flex:1; font-size:13px;">${esc(convMap[cid] || cid)}</div>
+      <div class="progress"><span style="width:${n/max*100}%; background:var(--pink);"></span></div>
+      <div style="width:40px; text-align:right; font-weight:600;">${n}</div>
+    </div>`).join('') || '<div class="empty-state">No data</div>';
+}
+
+// ═══════════════ Init ═══════════════
+document.getElementById('cfgUrl').value = CFG.url;
+document.getElementById('cfgKey').value = CFG.key;
+document.getElementById('cfgSchema').value = CFG.schema;
+loadAll();
+</script>
+
+</body>
+</html>

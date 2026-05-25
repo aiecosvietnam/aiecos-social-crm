@@ -1,0 +1,38 @@
+{
+  "_comment": "Sample BATCH payload sent by the Chrome extension to POST /api/sync. Header required: X-AIECOS-Token: <API_TOKEN>",
+
+  "page_name": "demo_page_001",
+  "channel": "zalo",
+  "ten_khach": "Nguyen Van A",
+  "url": "https://app.pancake.vn/?pzl_111111",
+  "thread_id": "pzl_111111",
+  "timestamp": "2026-05-25T10:00:00Z",
+
+  "messages": [
+    {
+      "content": "Hi shop, do you have size M?",
+      "sender_type": "customer",
+      "sender_name": "Nguyen Van A",
+      "timestamp": "2026-05-25T10:00:00Z",
+      "pancake_msg_id": "demo_msg_001",
+      "message_type": "text",
+      "attachments": []
+    },
+    {
+      "content": "Yes, size M available. 350k VND.",
+      "sender_type": "agent",
+      "sender_name": "AIECOS Demo Shop",
+      "timestamp": "2026-05-25T10:01:30Z",
+      "pancake_msg_id": "demo_msg_002",
+      "message_type": "text",
+      "attachments": []
+    },
+    {
+      "content": "Cho mình đặt 1 cái nhé. SĐT 0901234567, gửi quận 1.",
+      "sender_type": "customer",
+      "sender_name": "Nguyen Van A",
+      "timestamp": "2026-05-25T10:02:15Z",
+      "pancake_msg_id": "demo_msg_003"
+    }
+  ]
+}
