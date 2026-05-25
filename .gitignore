@@ -11,3 +11,6 @@ build/
 # Demo media — uploaded to GitHub Release assets instead
 assets/*.mp4
 assets/*.mov
+assets/*.jpg
+assets/*.jpeg
+assets/*.png

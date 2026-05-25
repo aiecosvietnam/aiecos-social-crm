@@ -172,6 +172,38 @@ Most CRMs lock you into their data silo. This template gives you:
 
 ---
 
+## ☕ Support development
+
+Nếu template này giúp ích cho bạn, ủng hộ một ly cà phê để mình tiếp tục build thêm nhiều dự án **mã nguồn mở thực tế** cho cộng đồng dev Việt Nam.
+
+> *If this template saved you time, consider supporting future open-source work. 100% goes back into building more real-world templates (CRM, AI agents, integrations like KiotViet/MISA/HubSpot/Shopify, Vietnamese + English docs).*
+
+### 🇻🇳 MoMo · VietQR · Napas247
+
+<p align="center">
+  <img src="https://github.com/aiecosvietnam/aiecos-social-crm/releases/download/v1.0.0/donate-momo.jpg" alt="MoMo / VietQR donate" width="320" />
+</p>
+
+<p align="center">
+  <b>NGUYEN TAN HOANG</b><br>
+  <code>PSG2614514200000011</code> · NH: MoMo<br>
+  <sub>Scan with MoMo / any VietQR-compatible app (Vietcombank, Techcombank, MB, TPBank, …)</sub>
+</p>
+
+### 🌍 Other ways to support
+
+| Action | Why it helps |
+|---|---|
+| ⭐ **Star this repo** | Boosts visibility → more devs find it → more contributors |
+| 🐛 **Open issues / PRs** | Real-world feedback shapes the roadmap |
+| 📢 **Share with your network** | Especially if you work on Vietnam social-commerce |
+| 💼 **Hire AIECOS** for custom builds | [aiecos.ai](https://aiecos.ai) — AI Sale Agent / AI Customer Care / custom CRM |
+| 🐦 **Tag us when shipping** | Twitter / LinkedIn — we'll amplify |
+
+**Cảm ơn 🙏** — every star, comment, donation keeps this momentum going.
+
+---
+
 ## Credits
 
 Built by **[AIECOS](https://aiecos.ai)** — open-source AI infrastructure for Vietnamese businesses.
