@@ -7,3 +7,7 @@ node_modules/
 *.bak.*
 dist/
 build/
+
+# Demo media — uploaded to GitHub Release assets instead
+assets/*.mp4
+assets/*.mov
