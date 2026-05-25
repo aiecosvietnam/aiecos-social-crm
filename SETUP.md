@@ -1,183 +1,148 @@
 # Setup Guide — AIECOS Social CRM
 
-Complete walkthrough from zero to running. **Total time: ~15 minutes** if you have Supabase + Node.js installed.
+From zero to running in **~15 minutes**. Three paths:
+
+| Path | Best for | Time |
+|---|---|---|
+| 🐳 **Docker** (recommended) | Try locally, learn the stack | 5 min |
+| ☁ **Hosted Supabase** | Production, no infra burden | 10 min |
+| 🏠 **Self-host full stack** | Air-gapped, full control | 30 min |
 
 ---
 
 ## Prerequisites
 
-- **Node.js** 22+ (`node -v`)
-- **Docker** (recommended for sync receiver) OR direct `npm start`
-- **Supabase project**:
-  - Cloud: [supabase.com](https://supabase.com) (free tier OK)
-  - OR Self-host: [supabase/supabase docker](https://supabase.com/docs/guides/self-hosting/docker)
-- **Chrome** for the extension
-- **Pancake account** with at least 1 connected page ([pancake.vn](https://pancake.vn))
+- **Node.js 22+** (`node -v`) — for MCP server + dev
+- **Docker** (any recent version) — for sync receiver + dev DB
+- **Chrome** browser — for the extension
+- **Pancake account** with at least 1 connected page → [pancake.vn](https://pancake.vn)
+- **Optional**: a Supabase project (cloud or self-host)
 
 ---
 
-## Step 1 — Database
+## Path 1 — Docker Quick Start (5 min)
 
-### 1.1 Create the schema
-
-Run `sync-receiver/schema.sql` on your Supabase Postgres:
-
-**Self-host:**
-```bash
-docker exec -i <postgres-container> psql -U postgres -d postgres < sync-receiver/schema.sql
-```
-
-**Cloud (Supabase SQL editor):**
-- Open project → SQL Editor → paste contents of `schema.sql` → Run.
-
-This creates schema `aiecos_social` with 4 tables: `pages`, `customers`, `conversations`, `messages`.
-
-### 1.2 Expose schema via PostgREST
-
-**Self-host:** Edit your Kong env in `docker-compose.yml` → `DB_SCHEMAS` to include `aiecos_social`:
-
-```yaml
-environment:
-  DB_SCHEMAS: public,storage,graphql_public,aiecos_social
-```
-
-Then `docker compose up -d kong postgrest`.
-
-**Cloud:** Settings → API → "Exposed schemas" → add `aiecos_social` → Save.
-
-### 1.3 Get your credentials
-
-You'll need:
-- **`SUPABASE_URL`**: `https://<project>.supabase.co` (cloud) or `http://localhost:8000` (self-host)
-- **`SUPABASE_SERVICE_KEY`**: service_role JWT (from project Settings → API)
-- **`SUPABASE_ANON_KEY`**: public anon JWT (admin UI uses this — read-only)
-
----
-
-## Step 2 — Sync Receiver
-
-The Express server that accepts messages from the Chrome extension and writes to Supabase.
-
-### Option A — Docker (recommended)
+The fastest way. Boots Postgres + PostgREST + sync receiver + admin UI in one command.
 
 ```bash
-cd sync-receiver
-cp .env.example .env
-# Edit .env with your credentials
+git clone https://github.com/aiecosvietnam/aiecos-social-crm.git
+cd aiecos-social-crm
+cp .env.example .env       # default values work for dev
+docker compose up -d
+```
 
-docker build -t aiecos-sync-receiver .
-docker run -d --name aiecos-sync-receiver \
-  --env-file .env \
-  -p 3500:3500 \
-  aiecos-sync-receiver
+**That's it.** Now:
 
-# Verify
+| Service | URL |
+|---|---|
+| Admin UI | http://localhost:8080 |
+| Sync receiver | http://localhost:3500 |
+| PostgREST | http://localhost:3000 |
+| Postgres | `localhost:5432` (user/pass: `postgres/postgres`) |
+
+### Seed demo data
+```bash
+bash examples/seed-demo-data.sh
+```
+→ Creates 5 partners (Active / Sleeping / At-Risk / Dormant / Churned) with synthetic conversation history. Admin UI populates immediately.
+
+### Verify
+```bash
 curl http://localhost:3500/api/status
-# {"status":"online","version":"1.5.0","schema":"aiecos_social",...}
+# {"status":"online","version":"1.6.0","db":"ok","db_latency_ms":12,...}
 ```
 
-### Option B — Direct Node
-
-```bash
-cd sync-receiver
-cp .env.example .env  # edit credentials
-npm install
-npm start
-```
-
-### Set a strong API token
-
-Generate a token:
-```bash
-openssl rand -hex 32
-```
-
-Put in `.env`:
-```
-API_TOKEN=<your-generated-token>
-```
-
-The Chrome extension will need this token to authenticate.
-
-### Expose publicly (production)
-
-If your Chrome runs on a different machine than the server, expose via:
-- **Cloudflare Tunnel** (free, easy): `cloudflared tunnel --url http://localhost:3500`
-- **nginx reverse proxy** (HTTPS preferred)
-- **Caddy** (auto-HTTPS)
-
-For local dev on same machine: extension can hit `http://localhost:3500` directly.
+Then open http://localhost:8080 → Settings → enter `http://localhost:3000` as Supabase URL → Save → Dashboard lights up.
 
 ---
 
-## Step 3 — Chrome Extension
+## Path 2 — Hosted Supabase (production-ready, 10 min)
 
-```
-1. Open chrome://extensions/
-2. Toggle "Developer mode" (top right)
-3. Click "Load unpacked"
-4. Select the chrome-extension/ folder
-5. Pin the extension to toolbar
-```
+### Step 1 — Database
 
-**Configure:**
-- Click the extension icon
-- Enter **Server URL**: `http://localhost:3500` (or your tunnel URL)
-- Enter **API Token**: the one from `.env`
-- Click **Save**
+1. Create a project at [supabase.com](https://supabase.com)
+2. SQL Editor → paste contents of [`sync-receiver/schema.sql`](sync-receiver/schema.sql) → Run
+3. Settings → API → **Exposed schemas** → add `aiecos_social` → Save
+4. Copy from Settings → API:
+   - **URL**: `https://<project>.supabase.co`
+   - **service_role key** (full access — sync receiver only, never expose to browser)
+   - **anon key** (read-only — admin UI uses this)
 
-**Use:**
-- Open `app.pancake.vn` and log in
-- The extension auto-syncs new messages every minute
-- Click **SYNC ALL** to walk through all conversations and backfill history
+### Step 2 — Sync Receiver
 
----
-
-## Step 4 — Admin UI
-
-The single-file HTML dashboard reads from Supabase REST directly.
-
-```
-open admin-ui/index.html
-```
-
-**On first load:**
-1. Click **Settings** in sidebar
-2. Paste:
-   - **Supabase URL**: your project URL
-   - **Anon / Service key**: anon key recommended (read-only)
-   - **Schema**: `aiecos_social`
-3. Click **Save + reload**
-
-**Modules:**
-- **Dashboard** — Total partners + activity trend + recent messages
-- **Cần chăm sóc** (Triage) — Auto-alerts for At-Risk / Dormant partners
-- **Pipeline** — Kanban view of 5 stages
-- **Partner 360** — Full partner table with stages
-- **Performance** — Customer vs Agent ratio + top partners
-- **Settings** — Config
-
-### Deploy admin UI
-
-Since it's pure static HTML, deploy anywhere:
-- **GitHub Pages** / **Cloudflare Pages** / **Vercel**: drag `admin-ui/` folder
-- **Nginx**: serve as static file
-
----
-
-## Step 5 — MCP Server (optional)
-
-Lets Claude (or any MCP client) query your data conversationally.
+Run anywhere with internet access (your VPS / Cloud Run / Fly.io / Render):
 
 ```bash
-cd mcp-server
-npm install
+docker run -d --name aiecos-sync \
+  -p 3500:3500 \
+  -e API_TOKEN="$(openssl rand -hex 32)" \
+  -e SUPABASE_URL="https://<project>.supabase.co" \
+  -e SUPABASE_SERVICE_KEY="eyJhbGc...service-role-key" \
+  -e SUPABASE_SCHEMA="aiecos_social" \
+  -e CORS_ORIGIN="https://your-admin-ui-domain.com" \
+  ghcr.io/aiecosvietnam/aiecos-sync-receiver:latest
+```
+
+**Save the generated `API_TOKEN`** — extension needs it.
+
+### Step 3 — Expose receiver publicly
+
+The Chrome extension needs to reach the receiver. Pick one:
+
+| Option | Cost | Setup |
+|---|---|---|
+| **Cloudflare Tunnel** | Free | `cloudflared tunnel create + DNS route` |
+| **nginx + Let's Encrypt** | $5/mo VPS | classic reverse proxy |
+| **Caddy** | Free | `caddy reverse-proxy --to :3500` auto-HTTPS |
+
+→ End result: `https://sync.yourdomain.com → :3500` with HTTPS.
+
+### Step 4 — Admin UI
+
+Deploy `admin-ui/` (3 static files) to anywhere:
+
+| Platform | How |
+|---|---|
+| **GitHub Pages** | Settings → Pages → Source = `docs/` folder |
+| **Cloudflare Pages** | Connect repo, no build needed |
+| **Vercel/Netlify** | Output dir = `admin-ui` |
+| **Self-host nginx** | `location / { root /opt/aiecos/admin-ui; }` |
+
+Open the deployed UI → Settings → paste Supabase URL + **anon key** (NOT service key) → Save.
+
+### Step 5 — Chrome Extension
+
+```
+chrome://extensions/ → Developer mode ON → Load unpacked → chrome-extension/
+```
+
+Click extension icon → enter:
+- **Server URL**: `https://sync.yourdomain.com`
+- **API Token**: the one from Step 2
+
+Open `app.pancake.vn` → extension auto-syncs every minute. Click **SYNC ALL** to backfill history.
+
+---
+
+## Path 3 — Self-host full stack
+
+For airgapped or full-control deployments. Self-host Supabase using their official [docker stack](https://supabase.com/docs/guides/self-hosting/docker), then run sync receiver in the same Docker network so it can hit `http://supabase-kong:8000` internally.
+
+See [docs/DEPLOY.md](docs/DEPLOY.md) for full guide.
+
+---
+
+## MCP Server (optional but recommended)
+
+Lets Claude / Cursor / any MCP client query your CRM in natural language.
+
+### Install
+```bash
+cd mcp-server && npm install
 ```
 
 ### Register with Claude Code
-
-Add to `~/.claude.json` under `mcpServers`:
-
+Edit `~/.claude.json` → add to `mcpServers`:
 ```json
 {
   "mcpServers": {
@@ -186,8 +151,8 @@ Add to `~/.claude.json` under `mcpServers`:
       "command": "node",
       "args": ["/absolute/path/to/aiecos-social-crm/mcp-server/index.js"],
       "env": {
-        "AIECOS_SUPABASE_URL": "https://<your-project>.supabase.co",
-        "AIECOS_SUPABASE_KEY": "eyJhbGc...your-service-key",
+        "AIECOS_SUPABASE_URL": "https://<project>.supabase.co",
+        "AIECOS_SUPABASE_KEY": "eyJhbGc...service-role-key",
         "AIECOS_SCHEMA": "aiecos_social"
       }
     }
@@ -195,64 +160,76 @@ Add to `~/.claude.json` under `mcpServers`:
 }
 ```
 
-Restart Claude Code. Now you can prompt:
+Restart Claude Code → 8 tools available with `mcp__aiecos-social-crm__*` prefix.
 
-> *"Use MCP aiecos-social-crm to show me top 5 most active partners this week"*
-> *"List dormant partners and last contact dates"*
-> *"Search messages containing 'pricing'"*
+**Try**: *"Use MCP aiecos-social-crm: show me summary + top 5 partners this week"*
 
-See [docs/MCP_USAGE.md](docs/MCP_USAGE.md) for all 8 tools.
+Full guide: [docs/MCP_USAGE.md](docs/MCP_USAGE.md)
 
 ---
 
-## Step 6 — Verify end-to-end
+## Verify end-to-end
 
-1. Open Pancake in Chrome
-2. Send a test message in a conversation
-3. Wait ~30 seconds
-4. Check sync receiver logs: `docker logs aiecos-sync-receiver --tail 10` → should see `[SYNC] BATCH ... inserted=1`
-5. Refresh Admin UI → message should appear in Dashboard → Recent
-6. Try MCP: ask Claude *"show summary of AIECOS social CRM"* → should return live counts
+1. Send a test message in Pancake (any conversation)
+2. Wait ~30 seconds
+3. Sync receiver logs:
+   ```bash
+   docker logs aiecos-sync --tail 5
+   # [SYNC] BATCH <page>: total=1 inserted=1 deduped=0 failed=0
+   ```
+4. Admin UI → Dashboard → **Recent activity** section shows the message
+5. MCP test: ask Claude *"recent_activity limit 5"* → returns live data
 
-✅ All working? You're done.
-
----
-
-## Troubleshooting
-
-### Extension shows "Unauthorized"
-- API_TOKEN in extension popup doesn't match server `.env`. Re-enter.
-
-### "Could not find table 'customers' in schema cache"
-- PostgREST hasn't loaded the schema. Restart PostgREST container. Verify `DB_SCHEMAS` includes `aiecos_social`.
-
-### Sync receiver crashes on startup
-- `SUPABASE_SERVICE_KEY` missing or invalid. Check `.env`.
-
-### Admin UI shows "Not configured"
-- Click Settings, enter credentials, save.
-
-### MCP tool not appearing in Claude
-- Restart Claude Code after editing `~/.claude.json`.
-- Check path in config is absolute, not `~/`.
+✅ All working? You're production.
 
 ---
 
-## Security checklist before going live
+## Production checklist (before going live)
 
-- [ ] Strong random `API_TOKEN` (32+ chars)
-- [ ] Sync receiver behind HTTPS (Cloudflare Tunnel or reverse proxy)
-- [ ] Admin UI uses **anon key**, not service key
-- [ ] Supabase RLS policies enabled (anon = read-only)
-- [ ] Service key never exposed to browser
-- [ ] CORS restricted to your admin UI domain (currently `*` — tighten in `server.js`)
+### Security
+- [ ] `API_TOKEN` generated with `openssl rand -hex 32` (32+ chars)
+- [ ] Sync receiver behind HTTPS (Cloudflare/Caddy/nginx)
+- [ ] `CORS_ORIGIN` set to your admin UI domain (not `*`)
+- [ ] Admin UI uses **anon key** (read-only), not service key
+- [ ] Supabase RLS policies enabled on all 4 tables (anon = SELECT only)
+- [ ] `service_role key` never exposed to browser/git
+- [ ] Rate limits validated (`RATE_MAX=300` default — tighten for prod)
+
+### Observability
+- [ ] Health check monitor pings `/api/status` every minute
+- [ ] Logs shipped to your aggregator (Datadog/Loki/CloudWatch)
+- [ ] `/metrics` scraped by Prometheus (or similar)
+- [ ] Alert on `db: "error"` in /api/status response
+
+### Backup
+- [ ] Postgres daily backup automated (Supabase cloud handles this)
+- [ ] Backup tested with restore drill once
+
+### Operational
+- [ ] Set `working_hours_start/end` if you want time-of-day filtering
+- [ ] Pancake token rotation plan (Pancake tokens expire)
+- [ ] Extension auto-update plan (Chrome extensions need re-install on update)
+
+---
+
+## Common issues
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Extension popup "Unauthorized" | `API_TOKEN` mismatch | Copy exact token from server `.env` |
+| Admin UI: "Could not find table" | PostgREST schema not exposed | Add `aiecos_social` to `DB_SCHEMAS` env, restart Kong |
+| Sync receiver crashes on boot | `SUPABASE_SERVICE_KEY` missing | Check `.env` exists + has the key |
+| MCP tool not appearing in Claude | Config not picked up | Restart Claude Code, check `~/.claude.json` path is absolute |
+| Charts not rendering | Chart.js CDN blocked | Check browser console; if CDN blocked, bundle locally |
+| Messages appearing duplicate | Extension v4.5 or earlier | Update to v4.6+ (pancake_msg_id dedup) |
 
 ---
 
 ## Next steps
 
-- Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand internals
-- Read [docs/DEPLOY.md](docs/DEPLOY.md) for production deployment
-- Extend with your own AI agent (suggested replies, lead scoring, etc.)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — internals + design decisions
+- [docs/DEPLOY.md](docs/DEPLOY.md) — production deployment patterns
+- [docs/MCP_USAGE.md](docs/MCP_USAGE.md) — MCP tool reference + prompts
+- [examples/](examples/) — curl scripts + demo data seeder
 
-Questions? Open an issue on GitHub.
+Questions? [Open an issue](https://github.com/aiecosvietnam/aiecos-social-crm/issues).

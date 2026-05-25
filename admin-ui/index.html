@@ -377,6 +377,32 @@
         <div class="card" style="margin:0;"><div class="card-header"><h3>Hourly activity heatmap</h3></div><div class="card-body" id="dashHeatmap" style="overflow-x:auto;">Loading...</div></div>
       </div>
 
+      <!-- Inbox health + Response time row -->
+      <div class="grid-3">
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="inbox" class="icon-sm" style="color:var(--orange);"></i>Inbox health</h3></div>
+          <div class="card-body" id="inboxHealth">Loading...</div>
+        </div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="timer" class="icon-sm" style="color:var(--accent);"></i>Response time</h3></div>
+          <div class="card-body" id="responseTime">Loading...</div>
+        </div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="user-plus" class="icon-sm" style="color:var(--green);"></i>New partners (14d)</h3></div>
+          <div class="card-body" style="height:140px; padding:18px;"><canvas id="newPartnersChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Peak hours + Reply rate + Sentiment row -->
+      <div class="grid-3">
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="alarm-clock" class="icon-sm" style="color:var(--purple);"></i>Top hours</h3></div>
+          <div class="card-body" style="height:140px; padding:18px;"><canvas id="topHoursChart"></canvas></div>
+        </div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="percent" class="icon-sm" style="color:var(--pink);"></i>Reply rate per channel</h3></div>
+          <div class="card-body" id="replyRateBox">Loading...</div>
+        </div>
+        <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="smile" class="icon-sm" style="color:var(--green);"></i>Sentiment signals</h3></div>
+          <div class="card-body" id="sentimentBox">Loading...</div>
+        </div>
+      </div>
+
       <!-- Top partners + Recent activity row -->
       <div class="grid-2">
         <div class="card" style="margin:0;"><div class="card-header"><h3 style="display:flex;align-items:center;gap:8px;"><i data-lucide="trending-up" class="icon-sm" style="color:var(--accent);"></i>Top 5 partners (this week)</h3></div><div class="card-body" id="dashTopPartners">Loading...</div></div>
@@ -433,16 +459,36 @@
 
     <!-- ═══ PIPELINE ═══ -->
     <section class="section" id="sec-pipeline">
-      <div class="page-header"><div><h1>Pipeline</h1><p>Tình trạng đối tác — phân nhóm theo mức độ hoạt động</p></div></div>
+      <div class="page-header">
+        <div><h1>Pipeline</h1><p>Tình trạng đối tác — phân nhóm theo mức độ hoạt động (last contact)</p></div>
+        <div class="header-actions">
+          <input id="pipelineSearch" type="text" placeholder="Search partners..." oninput="renderPipeline()" style="padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg-card); color:var(--text); font-family:inherit; width:200px;">
+        </div>
+      </div>
+      <div class="channel-row" id="pipelineChannelChips" style="border:none; padding:0 0 14px 0;"></div>
       <div class="kanban" id="kanban"></div>
     </section>
 
     <!-- ═══ PARTNER 360 ═══ -->
     <section class="section" id="sec-partner360">
-      <div class="page-header"><div><h1>Partner 360</h1><p>Quản lý đối tác B2B — chi tiết last contact + activity</p></div></div>
+      <div class="page-header">
+        <div><h1>Partner 360</h1><p>Quản lý đối tác B2B — full activity timeline · click row để xem chi tiết</p></div>
+        <div class="header-actions">
+          <input id="partnerSearch" type="text" placeholder="Search partners..." oninput="renderPartner360()" style="padding:7px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; background:var(--bg-card); color:var(--text); font-family:inherit; width:200px;">
+          <button class="btn" onclick="exportCSV('partners')" style="display:flex;align-items:center;gap:6px;"><i data-lucide="download" class="icon-sm"></i>CSV</button>
+        </div>
+      </div>
+      <div class="filter-segs" id="partnerSegs" style="margin-bottom:14px;">
+        <button class="active" onclick="setPartnerSeg('all',this)">All</button>
+        <button onclick="setPartnerSeg('active',this)">Active</button>
+        <button onclick="setPartnerSeg('sleeping',this)">Sleeping</button>
+        <button onclick="setPartnerSeg('at_risk',this)">At-Risk</button>
+        <button onclick="setPartnerSeg('dormant',this)">Dormant</button>
+        <button onclick="setPartnerSeg('churned',this)">Churned</button>
+      </div>
       <div class="card"><div class="card-body" style="padding:0;">
-        <table><thead><tr><th>Partner</th><th>Page</th><th>Stage</th><th>Days silent</th><th>Last seen</th></tr></thead>
-        <tbody id="partnerTable"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+        <table><thead><tr><th>Partner</th><th>Page</th><th>Stage</th><th>Days silent</th><th>Last seen</th><th></th></tr></thead>
+        <tbody id="partnerTable"><tr><td colspan="6">Loading...</td></tr></tbody></table>
       </div></div>
     </section>
 
@@ -987,6 +1033,119 @@ function renderDashboard() {
   heatHtml += '</div>';
   document.getElementById('dashHeatmap').innerHTML = heatHtml;
 
+  // ── Inbox health ──
+  const last24 = Date.now() - 86400000;
+  const msgsLast24 = _messages.filter(m => new Date(m.created_time).getTime() >= last24);
+  const last24Cust = msgsLast24.filter(m => m.sender_type === 'customer').length;
+  const last24Agent = msgsLast24.filter(m => m.sender_type === 'agent').length;
+  const unanswered = _conversations.filter(c => {
+    const last = _messages.find(m => m.conversation_id === c.id);
+    return last && last.sender_type === 'customer';
+  }).length;
+  let longestWaitHours = 0;
+  _conversations.forEach(c => {
+    const last = _messages.find(m => m.conversation_id === c.id);
+    if (last && last.sender_type === 'customer') {
+      const h = (Date.now() - new Date(last.created_time).getTime()) / 3600000;
+      if (h > longestWaitHours) longestWaitHours = h;
+    }
+  });
+  document.getElementById('inboxHealth').innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div><div style="font-size:11px; color:var(--text-muted);">Last 24h msgs</div><div style="font-size:22px; font-weight:700; margin-top:4px;">${msgsLast24.length}</div><div style="font-size:11px; color:var(--text-light);">${last24Cust}c · ${last24Agent}a</div></div>
+      <div><div style="font-size:11px; color:var(--text-muted);">Unanswered</div><div style="font-size:22px; font-weight:700; color:var(--orange); margin-top:4px;">${unanswered}</div><div style="font-size:11px; color:var(--text-light);">conversations</div></div>
+      <div style="grid-column:span 2;"><div style="font-size:11px; color:var(--text-muted);">Longest wait</div><div style="font-size:18px; font-weight:700; color:${longestWaitHours > 24 ? 'var(--red)' : longestWaitHours > 4 ? 'var(--orange)' : 'var(--green)'}; margin-top:4px;">${longestWaitHours < 1 ? Math.round(longestWaitHours*60)+'m' : longestWaitHours < 24 ? longestWaitHours.toFixed(1)+'h' : Math.round(longestWaitHours/24)+'d'}</div></div>
+    </div>`;
+
+  // ── Response time (compute from message pairs) ──
+  const responseTimes = [];
+  const convs = {};
+  [..._messages].sort((a,b) => new Date(a.created_time).getTime() - new Date(b.created_time).getTime()).forEach(m => {
+    if (!convs[m.conversation_id]) convs[m.conversation_id] = [];
+    convs[m.conversation_id].push(m);
+  });
+  Object.values(convs).forEach(arr => {
+    for (let i = 0; i < arr.length - 1; i++) {
+      if (arr[i].sender_type === 'customer' && arr[i+1].sender_type === 'agent') {
+        const ms = new Date(arr[i+1].created_time).getTime() - new Date(arr[i].created_time).getTime();
+        if (ms > 1000 && ms < 24*3600*1000) responseTimes.push(ms);
+      }
+    }
+  });
+  responseTimes.sort((a,b) => a - b);
+  const p50 = responseTimes[Math.floor(responseTimes.length * 0.5)] || 0;
+  const p95 = responseTimes[Math.floor(responseTimes.length * 0.95)] || 0;
+  const avgRT = responseTimes.length ? responseTimes.reduce((a,b)=>a+b,0)/responseTimes.length : 0;
+  const fmt = (ms) => ms < 60000 ? Math.round(ms/1000)+'s' : ms < 3600000 ? Math.round(ms/60000)+'m' : (ms/3600000).toFixed(1)+'h';
+  document.getElementById('responseTime').innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+      <div style="text-align:center;"><div style="font-size:11px; color:var(--text-muted);">Avg</div><div style="font-size:18px; font-weight:700; margin-top:4px;">${fmt(avgRT)}</div></div>
+      <div style="text-align:center;"><div style="font-size:11px; color:var(--text-muted);">p50</div><div style="font-size:18px; font-weight:700; color:var(--accent); margin-top:4px;">${fmt(p50)}</div></div>
+      <div style="text-align:center;"><div style="font-size:11px; color:var(--text-muted);">p95</div><div style="font-size:18px; font-weight:700; color:var(--orange); margin-top:4px;">${fmt(p95)}</div></div>
+    </div>
+    <div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted); text-align:center;">${responseTimes.length} customer→agent pairs (last 30d)</div>`;
+
+  // ── New partners trend (line chart) ──
+  const newP = Array(14).fill(0);
+  _customers.forEach(c => {
+    if (!c.first_seen_at) return;
+    const daysAgo = Math.floor((Date.now() - new Date(c.first_seen_at).getTime()) / 86400000);
+    if (daysAgo >= 0 && daysAgo < 14) newP[13 - daysAgo]++;
+  });
+  if (window._newPartnersChart) window._newPartnersChart.destroy();
+  window._newPartnersChart = new Chart(document.getElementById('newPartnersChart'), {
+    type: 'line',
+    data: { labels: Array.from({length:14}, (_,i) => new Date(Date.now()-(13-i)*86400000).toISOString().slice(5,10)),
+      datasets: [{ data: newP, borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.15)', tension:.3, fill:true, pointRadius:2, borderWidth:2 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1 } } } }
+  });
+
+  // ── Top hours (bar) ──
+  const hourBins = Array(24).fill(0);
+  _messages.forEach(m => { try { hourBins[new Date(m.created_time).getHours()]++; } catch {} });
+  if (window._topHoursChart) window._topHoursChart.destroy();
+  window._topHoursChart = new Chart(document.getElementById('topHoursChart'), {
+    type: 'bar',
+    data: { labels: Array.from({length:24}, (_,i) => i),
+      datasets: [{ data: hourBins, backgroundColor:'#a78bfa', borderRadius:3 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ font:{ size:9 } } }, y:{ display:false } } }
+  });
+
+  // ── Reply rate per channel ──
+  const chRates = {};
+  (window.DEMO_DATA?.pages || []).concat(Object.keys(byCh).map(id => ({ id, name: id, type: 'unknown' }))).forEach(p => {
+    if (chRates[p.id]) return;
+    const msgs = _messages.filter(m => m.page_id === p.id);
+    const cust = msgs.filter(m => m.sender_type === 'customer').length;
+    const ag = msgs.filter(m => m.sender_type === 'agent').length;
+    chRates[p.id] = { name: p.name || p.id, cust, ag, rate: cust > 0 ? ag/(cust+ag)*100 : 0 };
+  });
+  document.getElementById('replyRateBox').innerHTML = Object.values(chRates).filter(c => c.cust > 0 || c.ag > 0).slice(0,4).map(c => `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>${esc((c.name||'').slice(0,28))}</span><span style="font-weight:600;">${c.rate.toFixed(0)}%</span></div>
+      <div class="progress" style="width:100%;"><span style="width:${c.rate}%; background:var(--pink);"></span></div>
+      <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${c.cust} customer · ${c.ag} agent msgs</div>
+    </div>`).join('') || '<div class="empty-state">No data</div>';
+
+  // ── Sentiment signals (lightweight keyword detection) ──
+  const POS = /cảm ơn|tốt|ok|được|tuyệt|hay|thanks|good|great/i;
+  const NEG = /tệ|chậm|không|chưa|fail|lỗi|sai|bad|complain/i;
+  const URGENT = /gấp|ngay|nhanh|urgent|asap/i;
+  let pos = 0, neg = 0, urg = 0;
+  _messages.filter(m => m.sender_type === 'customer').forEach(m => {
+    if (POS.test(m.content)) pos++;
+    if (NEG.test(m.content)) neg++;
+    if (URGENT.test(m.content)) urg++;
+  });
+  document.getElementById('sentimentBox').innerHTML = `
+    <div style="display:flex; gap:14px; justify-content:space-around; text-align:center;">
+      <div><i data-lucide="thumbs-up" style="color:var(--green); width:24px; height:24px;"></i><div style="font-size:22px; font-weight:700; margin-top:4px; color:var(--green);">${pos}</div><div style="font-size:11px; color:var(--text-muted);">Positive</div></div>
+      <div><i data-lucide="thumbs-down" style="color:var(--red); width:24px; height:24px;"></i><div style="font-size:22px; font-weight:700; margin-top:4px; color:var(--red);">${neg}</div><div style="font-size:11px; color:var(--text-muted);">Negative</div></div>
+      <div><i data-lucide="zap" style="color:var(--orange); width:24px; height:24px;"></i><div style="font-size:22px; font-weight:700; margin-top:4px; color:var(--orange);">${urg}</div><div style="font-size:11px; color:var(--text-muted);">Urgent</div></div>
+    </div>
+    <div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--border); font-size:10px; color:var(--text-muted); text-align:center;">Keyword-based (simple). For accurate sentiment use LLM scoring.</div>`;
+
   // Top 5 partners this week
   const since7 = Date.now() - 7*86400000;
   const counts = {};
@@ -1040,9 +1199,38 @@ function renderDashboard() {
 }
 
 // ═══════════════ Pipeline (Kanban) ═══════════════
+let _pipelineChannel = 'all';
+function setPipelineChannel(ch, btn) {
+  _pipelineChannel = ch;
+  document.querySelectorAll('#pipelineChannelChips .channel-chip').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPipeline();
+}
 function renderPipeline() {
+  // Channel filter chips
+  const pages = window.DEMO_DATA?.pages || [];
+  const channels = ['all', ...new Set(pages.map(p => p.type))];
+  const chipsHost = document.getElementById('pipelineChannelChips');
+  if (chipsHost && chipsHost.children.length === 0) {
+    chipsHost.innerHTML = channels.map(ch => {
+      const icon = ch === 'all' ? 'globe' : ch === 'facebook' ? 'facebook' : ch.startsWith('zalo') ? 'message-square' : ch === 'instagram' ? 'instagram' : 'circle';
+      const label = ch === 'all' ? 'All channels' : ch === 'zalo_oa' ? 'Zalo OA' : ch.charAt(0).toUpperCase() + ch.slice(1);
+      return `<button class="channel-chip ${ch===_pipelineChannel?'active':''}" onclick="setPipelineChannel('${ch}', this)"><i data-lucide="${icon}" class="icon-sm"></i>${label}</button>`;
+    }).join('');
+  }
+  // Search + channel filter
+  const search = (document.getElementById('pipelineSearch')?.value || '').toLowerCase().trim();
+  let pool = _customers.slice();
+  if (_pipelineChannel !== 'all') {
+    pool = pool.filter(c => {
+      const page = pages.find(p => p.id === c.page_id);
+      return page && page.type === _pipelineChannel;
+    });
+  }
+  if (search) pool = pool.filter(c => (c.name||'').toLowerCase().includes(search));
+
   const stages = ['active','sleeping','at_risk','dormant','churned'];
-  const grouped = Object.fromEntries(stages.map(s => [s, _customers.filter(c => c._stage === s)]));
+  const grouped = Object.fromEntries(stages.map(s => [s, pool.filter(c => c._stage === s)]));
   document.getElementById('kanban').innerHTML = stages.map(s => `
     <div class="kanban-col">
       <div class="kanban-col-header">
@@ -1057,17 +1245,30 @@ function renderPipeline() {
 }
 
 // ═══════════════ Partner 360 ═══════════════
+let _partnerSeg = 'all';
+function setPartnerSeg(seg, btn) {
+  _partnerSeg = seg;
+  document.querySelectorAll('#partnerSegs button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPartner360();
+}
 function renderPartner360() {
-  const html = _customers.slice(0,100).map((p, i) => `
-    <tr data-idx="${i}">
-      <td><b>${esc((p.name||'?').slice(0,40))}</b></td>
+  const search = (document.getElementById('partnerSearch')?.value || '').toLowerCase().trim();
+  let pool = _customers.filter(p => _partnerSeg === 'all' || p._stage === _partnerSeg);
+  if (search) pool = pool.filter(p => (p.name||'').toLowerCase().includes(search));
+
+  const html = pool.slice(0,100).map((p, i) => {
+    const orig = _customers.indexOf(p);
+    return `<tr data-idx="${orig}">
+      <td style="display:flex; align-items:center; gap:10px;"><div class="avatar-c sm ${p._stage}">${esc((p.name||'?').charAt(0).toUpperCase())}</div><b>${esc((p.name||'?').slice(0,40))}</b></td>
       <td><small style="color:var(--text-muted);">${esc((p.page_id||'').slice(0,30))}</small></td>
       <td><span class="pill pill-${p._stage}">${p._stage.toUpperCase()}</span></td>
       <td>${p._days < 9999 ? p._days+'d' : '—'}</td>
       <td><small>${(p.last_seen_at||'').slice(0,19) || 'never'}</small></td>
-    </tr>`).join('');
-  document.getElementById('partnerTable').innerHTML = html || '<tr><td colspan="5" class="empty-state">No partners</td></tr>';
-  // Wire row click → drawer
+      <td style="text-align:right;"><i data-lucide="chevron-right" class="icon-sm" style="color:var(--text-muted);"></i></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('partnerTable').innerHTML = html || '<tr><td colspan="6" class="empty-state">No partners match filter</td></tr>';
   document.querySelectorAll('#partnerTable tr[data-idx]').forEach(tr => {
     tr.onclick = () => openPartnerDrawer(_customers[+tr.dataset.idx]);
   });
