@@ -37,7 +37,8 @@ docker compose up -d
 |---|---|
 | Admin UI | http://localhost:8080 |
 | Sync receiver | http://localhost:3500 |
-| PostgREST | http://localhost:3000 |
+| Gateway (Supabase-style `/rest/v1`) | http://localhost:8000 |
+| PostgREST (raw, used by `examples/curl-*.sh`) | http://localhost:3000 |
 | Postgres | `localhost:5432` (user/pass: `postgres/postgres`) |
 
 ### Seed demo data
@@ -52,7 +53,7 @@ curl http://localhost:3500/api/status
 # {"status":"online","version":"1.6.0","db":"ok","db_latency_ms":12,...}
 ```
 
-Then open http://localhost:8080 → Settings → enter `http://localhost:3000` as Supabase URL → Save → Dashboard lights up.
+Then open http://localhost:8080 → Settings → enter `http://localhost:8000` as Supabase URL and any value (e.g. `dev`) as anon key → Save → Dashboard lights up. The dev gateway ignores the key; leaving it empty keeps the UI in demo mode.
 
 ---
 

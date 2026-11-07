@@ -16,6 +16,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) · Versioning: 
 
 ### Fixed
 - Sparkline canvas inflating to viewport height — wrapped in `.spark-wrap` with bounded parent
+- Docker dev stack could not read or write data: `supabase-js` and the admin UI call `/rest/v1/...` and send a Bearer key, which plain PostgREST 404s / rejects (`Server lacks JWT secret`). Added an nginx `gateway` service on `:8000` that strips `/rest/v1` and drops auth headers; sync receiver now targets it by default. Docs updated to use `http://localhost:8000` in admin UI Settings.
 
 ## [1.6.0] — sync-receiver — 2026-05-25
 

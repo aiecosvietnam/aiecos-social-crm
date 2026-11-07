@@ -1,10 +1,12 @@
 # ═══════════════════════════════════════════════════════════════════
 #  AIECOS Social CRM — Dev stack (one-command boot)
 #
-#  Boots: Postgres + PostgREST + Sync Receiver + Static admin UI
+#  Boots: Postgres + PostgREST + Gateway + Sync Receiver + Static admin UI
 #  After `docker compose up -d`:
 #    - Sync receiver: http://localhost:3500
-#    - PostgREST:     http://localhost:3000
+#    - Gateway:       http://localhost:8000  (Supabase-style /rest/v1 —
+#                     use this as "Supabase URL" in admin UI Settings)
+#    - PostgREST:     http://localhost:3000  (raw, for curl examples)
 #    - Postgres:      localhost:5432 (postgres/postgres)
 #    - Admin UI:      http://localhost:8080
 #
@@ -48,6 +50,20 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
 
+  # ── Gateway (dev only — stands in for Supabase's Kong) ──
+  # supabase-js and the admin UI call <SUPABASE_URL>/rest/v1/..., but plain
+  # PostgREST serves at "/" and rejects the dummy Bearer key (no JWT secret
+  # in dev). This proxy strips /rest/v1 and drops the auth headers.
+  gateway:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - postgrest
+    volumes:
+      - ./gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:8000:80"
+
   # ── Sync Receiver ──
   sync-receiver:
     build: ./sync-receiver
@@ -55,12 +71,14 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      gateway:
+        condition: service_started
     environment:
       PORT: 3500
       # Strong shared secret between Chrome extension and this server
       API_TOKEN: ${API_TOKEN:-dev-token-change-me-in-prod}
-      # Dev: point at local PostgREST. Prod: point at real Supabase.
-      SUPABASE_URL: ${SUPABASE_URL:-http://postgrest:3000}
+      # Dev: point at local gateway. Prod: point at real Supabase.
+      SUPABASE_URL: ${SUPABASE_URL:-http://gateway}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-dev-no-auth}
       SUPABASE_SCHEMA: ${SUPABASE_SCHEMA:-aiecos_social}
     ports:

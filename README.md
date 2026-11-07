@@ -81,6 +81,7 @@ aiecos-social-crm/
 ├── .env.example              ← Root env (for docker compose)
 ├── chrome-extension/         ← AIECOS Pancake Connector (Manifest V3)
 ├── sync-receiver/            ← Express server + Dockerfile + schema.sql
+├── gateway/                  ← Dev-only nginx: Supabase-style /rest/v1 → PostgREST
 ├── mcp-server/               ← MCP server for Claude
 ├── admin-ui/                 ← Single-file HTML dashboard
 ├── examples/                 ← Curl scripts, seed data, MCP prompts
@@ -106,7 +107,7 @@ bash examples/seed-demo-data.sh
 
 # Open admin UI
 open http://localhost:8080
-# → Settings → Supabase URL: http://localhost:3000 → Schema: aiecos_social → Save
+# → Settings → Supabase URL: http://localhost:8000 → Anon key: any value (e.g. dev) → Schema: aiecos_social → Save
 ```
 
 Done. You can now see Active / Sleeping / At-Risk / Dormant / Churned partners in the kanban.
